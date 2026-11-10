@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PlayDu">
 <title>PlayDu — demo app</title>
-<meta name="description" content="PlayDu: verified parents connecting their children for safe, enriching playdates. Interactive demo.">
+<meta name="description" content="PlayDu: dating and friendship for everyone 18+, with verified members. Interactive demo.">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22PlayDu%22%2C%22short_name%22%3A%22PlayDu%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FFF4DC%22%2C%22theme_color%22%3A%22%23E5422B%22%2C%22start_url%22%3A%22.%22%7D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
@@ -326,6 +326,7 @@ textarea.input{padding:12px 0;min-height:56px;resize:none;border:0;background:tr
 .locked{position:relative;overflow:hidden}
 .locked>.veil{position:absolute;inset:0;background:rgba(255,244,220,.78);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:inherit}
 .boosting{animation:pulse 1.6s ease-in-out infinite}
+#nav{grid-template-columns:repeat(3,1fr)}#nav .pill{width:calc((100% - 16px)/3)}
 </style>
 </head>
 <body>
@@ -333,11 +334,11 @@ textarea.input{padding:12px 0;min-height:56px;resize:none;border:0;background:tr
   <aside class="aside" aria-label="About this demo">
     <span class="badge b-ink" style="align-self:flex-start">INTERACTIVE DEMO · SAMPLE DATA</span>
     <h1>Play<em>Du</em></h1>
-    <p><strong>Empowering play. Safely.</strong> Verified parents connect their children for enriching playdates, in person or by video, nearby or across the world.</p>
+    <p><strong>Meet someone real.</strong> Dating and friendship for everyone 18 and over, with ID-verified members and a daily swipe limit on every plan.</p>
     <div class="lab">
       <div class="label">Demo lab — experiment</div>
-      <div class="row"><button class="chip" data-a="lab-plan" data-v="free">Free</button><button class="chip" data-a="lab-plan" data-v="premium">Premium</button><button class="chip" data-a="lab-plan" data-v="plus">Premium+</button><button class="chip" data-a="lab-plan" data-v="gold">Gold</button><button class="chip" data-a="lab-plan" data-v="platinum">Platinum</button></div>
-      <div class="row"><button class="chip" data-a="lab-day">Next day</button><button class="chip" data-a="lab-like">A family likes us</button><button class="chip" data-a="lab-ver">Toggle verified</button><button class="chip" data-a="reset">Reset demo</button></div>
+      <div class="row"><button class="chip" data-a="lab-plan" data-v="free">Free · 15</button><button class="chip" data-a="lab-plan" data-v="premium">Premium · 40</button><button class="chip" data-a="lab-plan" data-v="gold">Gold · 80</button></div>
+      <div class="row"><button class="chip" data-a="lab-day">Next day</button><button class="chip" data-a="lab-like">Someone likes me</button><button class="chip" data-a="lab-ver">Toggle verified</button><button class="chip" data-a="reset">Reset demo</button></div>
       <p style="font-size:12.5px;color:var(--muted)">Swipe with the mouse or the ← → keys. Tap the sides of a card for more. On a phone, use “Add to Home Screen” to open it like an app.</p>
     </div>
   </aside>
@@ -347,7 +348,7 @@ textarea.input{padding:12px 0;min-height:56px;resize:none;border:0;background:tr
     <div id="layer"></div>
     <div id="fx" aria-hidden="true"></div>
     <div id="toast" role="status" aria-live="polite"></div>
-    <div id="splash" aria-hidden="true"><svg width="96" height="96" viewBox="0 0 48 48"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F47B2A"/><stop offset="1" stop-color="#E5422B"/></linearGradient></defs><rect width="48" height="48" rx="15" fill="url(#sg)"/><circle class="c1" cx="19" cy="20" r="8.5" fill="#FFF4DC"/><circle class="c2" cx="32" cy="27" r="5.5" fill="#FFD27A"/><path class="tag" d="M13 35q11 7 24 0" fill="none" stroke="#FFF4DC" stroke-width="3.2" stroke-linecap="round"/></svg><div class="word" style="font-family:Fredoka,sans-serif;font-weight:600">PlayDu</div><div class="tag">Empowering play. Safely.</div></div>
+    <div id="splash" aria-hidden="true"><svg width="96" height="96" viewBox="0 0 48 48"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F47B2A"/><stop offset="1" stop-color="#E5422B"/></linearGradient></defs><rect width="48" height="48" rx="15" fill="url(#sg)"/><circle class="c1" cx="19" cy="20" r="8.5" fill="#FFF4DC"/><circle class="c2" cx="32" cy="27" r="5.5" fill="#FFD27A"/><path class="tag" d="M13 35q11 7 24 0" fill="none" stroke="#FFF4DC" stroke-width="3.2" stroke-linecap="round"/></svg><div class="word" style="font-family:Fredoka,sans-serif;font-weight:600">PlayDu</div><div class="tag">Meet someone real.</div></div>
   </main>
 </div>
 <script>
@@ -355,680 +356,345 @@ textarea.input{padding:12px 0;min-height:56px;resize:none;border:0;background:tr
 'use strict';
 const $ = s => document.querySelector(s);
 const store = {
-  get(k,d){ try{ const v=localStorage.getItem('playdu:'+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
-  set(k,v){ try{ localStorage.setItem('playdu:'+k, JSON.stringify(v)); }catch(e){} }
+  get(k,d){ try{ const v=localStorage.getItem('playdu3:'+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem('playdu3:'+k, JSON.stringify(v)); }catch(e){} }
 };
 const vibrate = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-/* ================= plans: one source of truth ================= */
-const PLANS = {
-  free:     {name:'Free',      swipes:15,       filters:false, intl:false, boosts:0,  expert:false, bg:false, ads:true,  price:'Free'},
-  premium:  {name:'Premium',   swipes:Infinity, filters:true,  intl:false, boosts:0,  expert:false, bg:false, ads:true,  price:'[price] / month'},
-  plus:     {name:'Premium+',  swipes:Infinity, filters:true,  intl:true,  boosts:8,  expert:false, bg:false, ads:true,  price:'[price] / month'},
-  gold:     {name:'Gold',      swipes:Infinity, filters:true,  intl:true,  boosts:20, expert:true,  bg:false, ads:true,  price:'[price] / month'},
-  platinum: {name:'Platinum',  swipes:Infinity, filters:true,  intl:true,  boosts:20, expert:true,  bg:true,  ads:false, price:'[price] / month'}
-};
-const PLAN_FEATS = {
-  free:['15 national swipes a day','Profile, matching, chat and playdates','Community boards'],
-  premium:['Unlimited national swipes','Advanced filters (language, playdate type, goals)'],
-  plus:['Everything in Premium','Match with families internationally','8 profile boosts a month'],
-  gold:['Everything in Premium+','Expert webinars and articles','20 profile boosts a month'],
-  platinum:['Everything in Gold','Background check add-on and badge','No ads']
-};
-const ORDER = ['free','premium','plus','gold','platinum'];
-
-/* ================= vocab ================= */
-const INTERESTS = ['Art','Reading','Science','Sports','Music','Animals','Lego','Coding','Dance','Nature','Maths','Cooking'];
-const LGOALS = ['Social skills','English practice','Maths','New language','Reading','Confidence'];
-const PREFS = ['Learning','Fun','Cultural Exchange','Special Needs'];
-const LANGS = ['Bangla','English','Hindi','Urdu','Arabic','French','German','Italian','Spanish','Portuguese'];
-const level = a => a<=2?'Toddler':a<=5?'Preschool':a<=10?'Elementary':a<=13?'Middle school':'High school';
-
-/* ================= sample families (all fictional) ================= */
-const F = o => Object.assign({likes:false,bg:false,mentor:false,mode:'Both'}, o);
-const BD = [
- F({id:'b1',parent:'Nadia',rel:'Mother',city:'Gulshan, Dhaka',country:'Bangladesh',km:2,kids:[{n:'Ayaan',a:6,g:'Boy',i:['Lego','Science','Animals']}],langs:['Bangla','English'],prefs:['Learning','Fun'],pal:['#F6A04D','#E5422B','#FFD27A'],likes:true,bg:true,bio:'Weekends are for building things and visiting the zoo. Looking for a regular Saturday playmate.'}),
- F({id:'b2',parent:'Imran',rel:'Father',city:'Dhanmondi, Dhaka',country:'Bangladesh',km:5,kids:[{n:'Inaya',a:5,g:'Girl',i:['Art','Dance','Reading']}],langs:['Bangla','English'],prefs:['Fun','Cultural Exchange'],pal:['#F3C46B','#D9622B','#FFF0C2'],likes:true,bio:'Inaya loves painting and story time. We would love to meet families near the lake.'}),
- F({id:'b3',parent:'Farzana',rel:'Mother',city:'Banani, Dhaka',country:'Bangladesh',km:3,kids:[{n:'Rayan',a:8,g:'Boy',i:['Sports','Coding','Maths']},{n:'Zoya',a:4,g:'Girl',i:['Art','Music']}],langs:['Bangla','English'],prefs:['Learning'],pal:['#E87C5A','#B32D17','#F9C784'],bio:'Two kids, two very different energies. Football for one, crayons for the other.'}),
- F({id:'b4',parent:'Kamal',rel:'Father',city:'Uttara, Dhaka',country:'Bangladesh',km:9,kids:[{n:'Mahi',a:7,g:'Girl',i:['Reading','Science','Nature']}],langs:['Bangla','English'],prefs:['Learning','Cultural Exchange'],pal:['#F2B880','#C8553D','#FFE3A8'],likes:true,mentor:true,bio:'Father of three, the youngest is Mahi. Happy to share what worked for school admissions.'}),
- F({id:'b5',parent:'Rumana',rel:'Guardian',city:'Mirpur, Dhaka',country:'Bangladesh',km:7,kids:[{n:'Tahmid',a:10,g:'Boy',i:['Coding','Sports','Lego']}],langs:['Bangla'],prefs:['Special Needs','Fun'],pal:['#EBC27A','#A8642A','#FFF4DC'],likes:true,bio:'Tahmid is autistic and brilliant with Lego. Looking for patient, kind playmates.'}),
- F({id:'b6',parent:'Tania',rel:'Mother',city:'Chattogram',country:'Bangladesh',km:250,kids:[{n:'Arisha',a:6,g:'Girl',i:['Art','Animals','Music']}],langs:['Bangla','English'],prefs:['Fun','Learning'],mode:'Virtual',pal:['#F59E6B','#D8432E','#FFE0A3'],likes:true,bio:'Virtual art sessions on Friday mornings would be lovely.'}),
- F({id:'b7',parent:'Shafiq',rel:'Father',city:'Sylhet',country:'Bangladesh',km:240,kids:[{n:'Rafi',a:12,g:'Boy',i:['Science','Coding','Maths']}],langs:['Bangla','English'],prefs:['Learning'],mode:'Virtual',pal:['#E9A35F','#B83A22','#FCE3B0'],bio:'Rafi wants a coding buddy for weekend projects.'})
-];
-const UK = [
- F({id:'u1',parent:'Emma',rel:'Mother',city:'Hackney, London',country:'United Kingdom',km:3,kids:[{n:'Oliver',a:6,g:'Boy',i:['Lego','Science','Sports']}],langs:['English'],prefs:['Fun','Learning'],pal:['#F0A65A','#C9432E','#FFD27A'],likes:true,bg:true,bio:'Oliver would happily build Lego all day. Parks and museums suit us best.'}),
- F({id:'u2',parent:'Ayesha',rel:'Mother',city:'Tower Hamlets, London',country:'United Kingdom',km:4,kids:[{n:'Maryam',a:5,g:'Girl',i:['Art','Reading','Dance']}],langs:['English','Bangla'],prefs:['Cultural Exchange','Fun'],pal:['#E8B26A','#B6522A','#FFF0C2'],likes:true,bio:'We speak Bangla at home and would love Maryam to practise with other children.'}),
- F({id:'u3',parent:'James',rel:'Father',city:'Greenwich, London',country:'United Kingdom',km:8,kids:[{n:'Noah',a:8,g:'Boy',i:['Sports','Coding']},{n:'Isla',a:4,g:'Girl',i:['Music','Animals']}],langs:['English'],prefs:['Fun'],pal:['#F2B57E','#C24E2C','#FFE3A8'],bio:'Saturday mornings in the park, rain or shine.'}),
- F({id:'u4',parent:'Priya',rel:'Mother',city:'Wembley, London',country:'United Kingdom',km:12,kids:[{n:'Anika',a:7,g:'Girl',i:['Reading','Science','Nature']}],langs:['English','Hindi'],prefs:['Learning','Cultural Exchange'],pal:['#E98F55','#A8361F','#F9C784'],likes:true,mentor:true,bio:'Former teacher. Anika is a bookworm who loves nature walks.'}),
- F({id:'u5',parent:'Tom',rel:'Guardian',city:'Croydon, London',country:'United Kingdom',km:14,kids:[{n:'Leo',a:10,g:'Boy',i:['Coding','Lego','Maths']}],langs:['English'],prefs:['Special Needs','Learning'],pal:['#E6C07A','#9C5A26','#FFF4DC'],likes:true,bio:'Leo has ADHD and endless curiosity. Structured, short playdates work best.'}),
- F({id:'u6',parent:'Sophie',rel:'Mother',city:'Manchester',country:'United Kingdom',km:260,kids:[{n:'Mia',a:6,g:'Girl',i:['Art','Animals']}],langs:['English','French'],prefs:['Fun'],mode:'Virtual',pal:['#F4A261','#D1492F','#FFDFA0'],likes:true,bio:'Virtual craft afternoons are our favourite.'}),
- F({id:'u7',parent:'Daniel',rel:'Father',city:'Birmingham',country:'United Kingdom',km:160,kids:[{n:'Ethan',a:12,g:'Boy',i:['Science','Maths']}],langs:['English'],prefs:['Learning'],mode:'Virtual',pal:['#F0975A','#BF3F25','#FCE3B0'],bio:'Ethan is looking for a science-fair partner.'})
-];
-const INTL = [
- F({id:'i1',parent:'Giulia',rel:'Mother',city:'Milan',country:'Italy',kids:[{n:'Sofia',a:6,g:'Girl',i:['Art','Cooking','Music']}],langs:['Italian','English'],prefs:['Cultural Exchange','Fun'],mode:'Virtual',pal:['#F1B470','#C2502D','#FFE8B5'],likes:true,bio:'Sofia wants to show her pasta-making skills and learn a song from another country.'}),
- F({id:'i2',parent:'Lukas',rel:'Father',city:'Berlin',country:'Germany',kids:[{n:'Emil',a:7,g:'Boy',i:['Lego','Science','Nature']}],langs:['German','English'],prefs:['Cultural Exchange','Learning'],mode:'Virtual',pal:['#F59A5E','#D23F2A','#FFD9A0'],likes:true,bio:'Emil is practising English and loves showing his Lego city.'}),
- F({id:'i3',parent:'Marie',rel:'Mother',city:'Lyon',country:'France',kids:[{n:'Léa',a:5,g:'Girl',i:['Dance','Art','Reading']}],langs:['French','English'],prefs:['Cultural Exchange'],mode:'Virtual',pal:['#EFAE6E','#BE4A2B','#FFE3A8'],bio:'A little story time in two languages?'}),
- F({id:'i4',parent:'Sofia',rel:'Mother',city:'Lisbon',country:'Portugal',kids:[{n:'Tiago',a:8,g:'Boy',i:['Sports','Animals','Music']}],langs:['Portuguese','English'],prefs:['Fun','Cultural Exchange'],mode:'Virtual',pal:['#EDB574','#B8532C','#FFE8B5'],likes:true,bio:'Tiago is football-mad and curious about cricket.'}),
- F({id:'i5',parent:'Elin',rel:'Mother',city:'Stockholm',country:'Sweden',kids:[{n:'Elsa',a:6,g:'Girl',i:['Nature','Reading','Lego']}],langs:['Swedish','English'],prefs:['Learning','Cultural Exchange'],mode:'Virtual',pal:['#EBAA6A','#B9462A','#FFE3A8'],bio:'Forest school kid who loves stories from far away.'})
-];
-const ALL = BD.concat(UK, INTL);
-const fam = id => ALL.find(f => f.id === id);
-const VENUES = ['[Public park]','[Public library]','[Soft-play centre]','[Children’s museum]'];
-const TIMES = ['10:00 am','11:30 am','3:00 pm','4:30 pm','6:00 pm'];
-const SAFE_PROMPTS = k => [`What activities does ${k} enjoy?`,`Does ${k} have any allergies or needs we should know about?`,'Would a park or a library suit you better?','Shall we start with a short video hello?'];
-const REPLIES = ['That sounds lovely. Weekends work best for us.','Yes! The kids would enjoy that.','A short video hello first would be great.','Thank you for asking, that is very thoughtful.','Perfect, let us plan it.'];
-const CULTURE = ['Teach each other how to say “hello” and “thank you”.','Show a favourite toy and name it in your language.','Share a holiday your family celebrates and what you eat.','Sing one line of a song you learned at school.','Draw your home and hold it up to the camera.'];
-const STICKERS = ['🎈','🧩','🎨','⚽','🌟','📚'];
-const BOARDS = ['All','Toddler sleep','School admissions','Homeschooling','Special needs','Screen time'];
-const IDEAS = [
- {t:'5 fun ways to learn about fractions',a:'6–10',k:'Learning',d:'Pizza slices, Lego bricks and paper folding.'},
- {t:'Craft ideas for toddlers',a:'0–5',k:'Fun',d:'Mess-friendly, 20 minutes, things you already have at home.'},
- {t:'Virtual museum tours',a:'6–17',k:'Learning',d:'Three free tours to explore together on a video playdate.'},
- {t:'Culture swap: songs and holidays',a:'3–17',k:'Cultural Exchange',d:'A guided 30-minute exchange for international matches.'},
- {t:'Calm-play kit for sensory needs',a:'3–12',k:'Special Needs',d:'Quiet activities and a visual schedule template.'},
- {t:'Science in the kitchen',a:'6–13',k:'Learning',d:'Safe experiments with vinegar, baking soda and food colouring.'}
-];
-const AMAS = [
- {id:'a1',t:'Helping shy children make friends',who:'Child development specialist',d:3},
- {id:'a2',t:'Raising bilingual children',who:'Language educator',d:8},
- {id:'a3',t:'Screen time that actually helps',who:'Primary school teacher',d:15}
-];
-const EXPERT = [
- {t:'Webinar: The first in-person playdate',d:'45 min · safety, expectations and goodbyes'},
- {t:'Article: Play that builds maths confidence',d:'8 min read'},
- {t:'Webinar: Supporting neurodivergent play',d:'50 min · with Q&A'}
-];
-
-/* ================= dates ================= */
 const pad = n => String(n).padStart(2,'0');
-const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const addDays = n => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+n); return d; };
-const today = () => iso(new Date());
-const MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const nice = s => { const d = new Date(s+'T12:00:00'); return `${DOW[(d.getDay()+6)%7]} ${d.getDate()} ${MON[d.getMonth()].slice(0,3)}`; };
 
-/* ================= state ================= */
+/* ===== plans: every plan has a daily swipe limit ===== */
+const PLANS = {
+  free:    {name:'Free',    swipes:15, likes:false, rewind:false, price:'Free'},
+  premium: {name:'Premium', swipes:40, likes:true,  rewind:false, price:'[price] / month'},
+  gold:    {name:'Gold',    swipes:80, likes:true,  rewind:true,  price:'[price] / month'}
+};
+const FEATS = {
+  free:['15 swipes a day','Date and Friends modes','Matching and chat'],
+  premium:['40 swipes a day','See who likes you'],
+  gold:['80 swipes a day','See who likes you','Rewind your last pass']
+};
+const ORDER = ['free','premium','gold'];
+const INTERESTS = ['Coffee','Travel','Music','Food','Books','Fitness','Movies','Art','Cricket','Football','Cooking','Nature'];
+const LOOKING = ['Long-term','Dating','Not sure yet'];
+
+/* ===== sample people (fictional, all 18+) ===== */
+const P = o => Object.assign({likes:false}, o);
+const PEOPLE = [
+ P({id:'p1',name:'Nadia',age:34,g:'woman',job:'Banker',area:'Gulshan',km:2,looking:'Long-term',pal:['#F6A04D','#E5422B','#FFD27A'],likes:true,tags:['Coffee','Cooking','Travel'],prompt:'Sunday is pancakes, then a long walk by the lake.'}),
+ P({id:'p2',name:'Arif',age:39,g:'man',job:'Engineer',area:'Uttara',km:4,looking:'Long-term',pal:['#F0A65A','#C9432E','#FFD27A'],likes:true,tags:['Cricket','Cooking','Movies'],prompt:'Friday cricket, then biryani I cooked myself.'}),
+ P({id:'p3',name:'Ayesha',age:24,g:'woman',job:'Software engineer',area:'Banani',km:2,looking:'Dating',pal:['#F59A5E','#D23F2A','#FFD9A0'],tags:['Coffee','Nature','Books'],prompt:'Career-driven and very serious about biryani.'}),
+ P({id:'p4',name:'Tanvir',age:27,g:'man',job:'Product manager',area:'Tejgaon',km:3,looking:'Dating',pal:['#F0975A','#BF3F25','#FCE3B0'],likes:true,tags:['Football','Travel','Music'],prompt:'Looking for a teammate, not a project.'}),
+ P({id:'p5',name:'Farzana',age:41,g:'woman',job:'Doctor',area:'Dhanmondi',km:5,looking:'Long-term',pal:['#F3C46B','#D9622B','#FFF0C2'],likes:true,tags:['Books','Coffee','Art'],prompt:'Someone kind who understands night shifts.'}),
+ P({id:'p6',name:'Kamal',age:47,g:'man',job:'Businessman',area:'Gulshan',km:2,looking:'Long-term',pal:['#F2B57E','#C24E2C','#FFE3A8'],tags:['Travel','Books','Food'],prompt:'My daughter told me to join. She is probably right.'}),
+ P({id:'p7',name:'Sabrina',age:29,g:'woman',job:'Architect',area:'Banani',km:3,looking:'Not sure yet',pal:['#E87C5A','#B32D17','#F9C784'],likes:true,tags:['Art','Travel','Food'],prompt:'Best date: chai on a rooftop that is not a restaurant.'}),
+ P({id:'p8',name:'Imran',age:31,g:'man',job:'Doctor',area:'Dhanmondi',km:3,looking:'Long-term',pal:['#E8B26A','#B6522A','#FFF0C2'],likes:true,tags:['Fitness','Movies','Coffee'],prompt:'A quiet breakfast with good conversation.'}),
+ P({id:'p9',name:'Rehana',age:52,g:'woman',job:'Retired teacher',area:'Mirpur',km:6,looking:'Long-term',pal:['#EBC27A','#A8642A','#FFF4DC'],tags:['Music','Nature','Books'],prompt:'Evening walks and old Bangla songs.'}),
+ P({id:'p10',name:'Shafiq',age:55,g:'man',job:'Retired banker',area:'Mirpur',km:6,looking:'Long-term',pal:['#E6C07A','#9C5A26','#FFF4DC'],likes:true,tags:['Nature','Books','Coffee'],prompt:'Mornings in the park, afternoons with a book.'}),
+ P({id:'p11',name:'Mitali',age:22,g:'woman',job:'Student',area:'Mohammadpur',km:4,looking:'Dating',pal:['#E9A35F','#B83A22','#FCE3B0'],likes:true,tags:['Music','Movies','Food'],prompt:'I ask a lot of questions. Fair warning.'}),
+ P({id:'p12',name:'Rakib',age:23,g:'man',job:'Designer',area:'Bashundhara',km:6,looking:'Not sure yet',pal:['#F39A5C','#CF422B','#FFD9A0'],tags:['Art','Football','Coffee'],prompt:'Will trade playlists for street-food spots.'}),
+ P({id:'p13',name:'Tahmina',age:45,g:'woman',job:'Entrepreneur',area:'Uttara',km:7,looking:'Dating',pal:['#F2B880','#C8553D','#FFE3A8'],tags:['Travel','Food','Art'],prompt:'I run a boutique. Honest opinions welcome.'}),
+ P({id:'p14',name:'Zubair',age:36,g:'man',job:'IT consultant',area:'Banani',km:3,looking:'Dating',pal:['#E98F55','#A8361F','#F9C784'],likes:true,tags:['Football','Coffee','Travel'],prompt:'Back from London, re-learning Dhaka traffic.'})
+];
+const person = id => PEOPLE.find(p => p.id === id);
+const REPLIES = ['That sounds lovely. Tell me more?','Ha, same here.','I would like that. Coffee this week?','That is kind of you to say.','Good question — let me think.'];
+const ICE = ['What does a perfect Friday look like for you?','Tea or coffee — and where?','What is the last thing that made you laugh?','What are you looking forward to this month?'];
+
+/* ===== state ===== */
+const today = () => new Date().toDateString();
 const fresh = () => ({
-  v:1, screen:'welcome', step:0, onboarded:false,
-  acct:{email:'',pledge:false},
-  me:{name:'',rel:'Mother',country:'Bangladesh',langs:['Bangla','English'],prefs:['Learning','Fun'],verified:false,bg:false,mentor:false,bio:''},
-  ver:{id:false,selfie:false,child:false,busy:null,review:false},
-  kids:[{name:'',age:6,gender:'Girl',interests:[],goals:[]}], kidSel:0, kidEdit:0,
-  perms:{photo:false,name:true,level:true,goals:false},
-  plan:'free', day:today(), used:0, boostsUsed:0, boostMonth:today().slice(0,7), boostUntil:0,
-  scope:'Nearby', sort:'Goals', filt:{mode:'Any',lang:'Any',pref:'Any'}, seen:{}, extraLikes:[], page:0,
-  matches:[], chats:{}, openChat:null,
-  events:[
-   {id:'e1',kind:'community',title:'Story Time Circle',date:iso(addDays(2)),time:'5:00 pm',mode:'Virtual',place:'PlayDu video room',ages:'3–6',joined:false},
-   {id:'e2',kind:'community',title:'Science Exploration Day',date:iso(addDays(5)),time:'10:30 am',mode:'In person',place:'[Public library]',ages:'6–10',joined:false},
-   {id:'e3',kind:'community',title:'Culture Swap: songs from home',date:iso(addDays(9)),time:'4:00 pm',mode:'Virtual',place:'PlayDu video room',ages:'5–12',joined:false},
-   {id:'e4',kind:'community',title:'Football in the park',date:iso(addDays(12)),time:'9:00 am',mode:'In person',place:'[Public park]',ages:'7–12',joined:false}
-  ],
-  calM:0, calSel:today(), stamps:[], newStamp:null,
-  comTab:'Boards', board:'All', helpful:{}, remind:{}, saved:{},
-  threads:[
-   {id:1,board:'Toddler sleep',who:'Farzana',mentor:false,t:'Sleep regression at 2 — what helped you?',r:18,time:'2h'},
-   {id:2,board:'School admissions',who:'Kamal',mentor:true,t:'How we prepared for the admission interview without stress',r:42,time:'5h'},
-   {id:3,board:'Special needs',who:'Rumana',mentor:false,t:'Short, structured playdates work wonders. Our routine inside.',r:27,time:'9h'},
-   {id:4,board:'Screen time',who:'Priya',mentor:true,t:'A simple rule that ended our screen-time fights',r:63,time:'1d'},
-   {id:5,board:'Homeschooling',who:'Emma',mentor:false,t:'Free resources for year 2 maths?',r:9,time:'1d'}
-  ],
-  draft:'', prop:null, call:null, sheet:null, matchPop:null
+  v:3, screen:'welcome', step:0, onboarded:false,
+  acct:{email:'',adult:false},
+  me:{name:'',age:28,gender:'man',show:'women',looking:'Long-term',interests:[],bio:'',verified:false,date:true,friends:true},
+  ver:{id:false,selfie:false,busy:null,review:false},
+  plan:'free', day:today(), used:0,
+  mode:'date', seen:{}, extraLikes:[], lastPass:null, page:0, filt:{min:18,max:60,km:10},
+  chats:{}, openChat:null, sheet:null, matchPop:null
 });
 let S = store.get('state', null);
-if (!S || S.v !== 1) S = fresh();
-function roll(){ if (S.day !== today()){ S.day = today(); S.used = 0; } const m = today().slice(0,7); if (S.boostMonth !== m){ S.boostMonth = m; S.boostsUsed = 0; } }
-roll();
-S.sheet = null; S.matchPop = null; S.call = null; S.ver.busy = null; S.ver.review = false; S.newStamp = null;
-Object.values(S.chats).forEach(c => { c.typing = false; });
-if (S.screen==='chat' && !S.chats[S.openChat]) S.screen = 'chats';
+if (!S || S.v !== 3) S = fresh();
+const roll = () => { if (S.day !== today()){ S.day = today(); S.used = 0; } };
+roll(); S.sheet=null; S.matchPop=null; S.ver.busy=null; S.ver.review=false;
+Object.values(S.chats).forEach(c => { c.typing=false; });
+if (S.screen==='chat' && !S.chats[S.openChat]) S.screen='chats';
 const save = () => store.set('state', S);
 const plan = () => PLANS[S.plan];
-const left = () => plan().swipes === Infinity ? Infinity : Math.max(0, plan().swipes - S.used);
-const boostsLeft = () => Math.max(0, plan().boosts - S.boostsUsed);
-const kid = () => S.kids[Math.min(S.kidSel, S.kids.length-1)];
-const kidName = k => (k.name||'').trim() || 'My child';
-const allVer = () => S.ver.id && S.ver.selfie && S.ver.child;
+const left = () => Math.max(0, plan().swipes - S.used);
+const key = id => S.mode + ':' + id;
 
-/* ================= visuals ================= */
+/* ===== visuals ===== */
 let gid = 0;
-const SK = ['#F2C9A0','#D9A070','#A8693F','#F6D7B8','#C68A55'], HR = ['#2B1B12','#5A3A22','#8A5A2B','#3B2A1E','#B8792E'];
-const hash = s => { let h = 0; for (const c of String(s)) h = (h*31 + c.charCodeAt(0)) % 997; return h; };
-function kava(name, size, bg){
-  const h = hash(name||'x'), sk = SK[h%5], hr = HR[(h>>2)%5], b = bg || ['#FFD27A','#F9B58A','#BFE3D8','#D9CFF5','#FBE0A0'][h%5];
-  return `<span class="kava" style="width:${size}px;height:${size}px"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" fill="${b}"/><circle cx="20" cy="23" r="11" fill="${sk}"/><path d="M8.5 22a11.5 11.5 0 0 1 23 0c-3-5-7.5-6.5-11.500-6.500S11.500 17 8.500 22z" fill="${hr}"/><circle cx="16" cy="23.500" r="1.400" fill="#2B1B12"/><circle cx="24" cy="23.500" r="1.400" fill="#2B1B12"/><path d="M16 27.500q4 3 8 0" fill="none" stroke="#2B1B12" stroke-width="1.400" stroke-linecap="round"/></svg></span>`;
-}
-function art(f, o){
-  o = o || {}; const [a,b,c] = f.pal, id = 'g'+(gid++), n = (f.kids||[]).length;
-  const kidsS = o.noFig ? '' : (n>1 ? `<circle cx="222" cy="290" r="30"/><path d="M178 470c4-70 22-104 44-104s40 34 44 104z"/><circle cx="292" cy="318" r="24"/><path d="M256 470c3-56 18-84 36-84s33 28 36 84z"/>` : `<circle cx="244" cy="286" r="34"/><path d="M194 470c4-78 26-116 50-116s46 38 50 116z"/>`);
-  const fig = o.noFig ? '' : `<g fill="#FFF4DC" opacity=".93"><circle cx="124" cy="196" r="56"/><path d="M14 470c8-116 56-172 110-172s102 56 110 172z"/>${kidsS}</g>`;
-  return `<svg class="art" viewBox="0 0 340 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="340" height="460" fill="url(#${id})"/><circle class="blob ${o.still?'':'float1'}" cx="285" cy="70" r="105" fill="${c}" opacity=".5"/><circle class="blob ${o.still?'':'float2'}" cx="36" cy="350" r="86" fill="#FFF4DC" opacity=".2"/>${fig}</svg>`;
-}
-const ME_PAL = ['#3E7F74','#1F5F55','#F9C784'];
-const meFam = () => ({pal:ME_PAL,kids:S.kids});
-const ava = (f, size, extra) => `<span class="ava" style="width:${size}px;height:${size}px;${extra||''}">${art({pal:f.pal,kids:[]},{still:true,noFig:false}).replace('<circle cx="244"','<circle display="none" cx="244"').replace('<path d="M194','<path display="none" d="M194')}</span>`;
-const logo = s => `<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F47B2A"/><stop offset="1" stop-color="#E5422B"/></linearGradient></defs><rect width="48" height="48" rx="15" fill="url(#lg${s})"/><circle cx="19" cy="20" r="8.500" fill="#FFF4DC"/><circle cx="32" cy="27" r="5.500" fill="#FFD27A"/><path d="M13 35q11 7 24 0" fill="none" stroke="#FFF4DC" stroke-width="3.200" stroke-linecap="round"/></svg>`;
+function art(p, o){ o = o||{}; const [a,b,c] = p.pal, id='g'+(gid++);
+  return `<svg class="art" viewBox="0 0 340 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="340" height="460" fill="url(#${id})"/><circle class="blob ${o.still?'':'float1'}" cx="285" cy="70" r="105" fill="${c}" opacity=".5"/><circle class="blob ${o.still?'':'float2'}" cx="36" cy="350" r="86" fill="#FFF4DC" opacity=".2"/>${o.noFig?'':'<g fill="#FFF4DC" opacity=".93"><circle cx="170" cy="200" r="64"/><path d="M44 470c8-118 62-178 126-178s118 60 126 178z"/></g>'}</svg>`; }
+const ME = {pal:['#3E7F74','#1F5F55','#F9C784']};
+const ava = (p, size, extra) => `<span class="ava" style="width:${size}px;height:${size}px;${extra||''}">${art(p,{still:true})}</span>`;
+const logo = s => `<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F47B2A"/><stop offset="1" stop-color="#E5422B"/></linearGradient></defs><rect width="48" height="48" rx="15" fill="url(#lg${s})"/><circle cx="19" cy="20" r="8.5" fill="#FFF4DC"/><circle cx="32" cy="27" r="5.5" fill="#FFD27A"/><path d="M13 35q11 7 24 0" fill="none" stroke="#FFF4DC" stroke-width="3.2" stroke-linecap="round"/></svg>`;
 const ic = (d, c, w, fill) => `<svg width="${w||22}" height="${w||22}" viewBox="0 0 24 24" fill="${fill||'none'}" stroke="${c||'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const D = {
- home:'<path d="M12 20s-7-4.500-7-10a4 4 0 0 1 7-2.600A4 4 0 0 1 19 10c0 5.500-7 10-7 10z"/>',
- cal:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M8 3v4M16 3v4"/>',
- people:'<circle cx="9" cy="9" r="3.500"/><path d="M2.500 20c.8-3.600 3.400-5.500 6.500-5.500s5.700 1.900 6.500 5.500"/><circle cx="17.500" cy="10" r="2.500"/><path d="M17 14.500c2.400.2 4 1.700 4.600 4.500"/>',
- chat:'<path d="M4 5h16v11H10l-6 4V5z"/>',
- user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c1.500-4 4.500-6 8-6s6.500 2 8 6"/>',
- back:'<path d="M15 5l-7 7 7 7"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>', check:'<path d="M5 12l5 5 9-10"/>',
- shield:'<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
- filter:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
- more:'<circle cx="5" cy="12" r="1.500"/><circle cx="12" cy="12" r="1.500"/><circle cx="19" cy="12" r="1.500"/>',
- send:'<path d="M5 12h14M13 6l6 6-6 6"/>', video:'<rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3z"/>',
- plus:'<path d="M12 5v14M5 12h14"/>', lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
- bolt:'<path d="M13 3L5 13h6l-1 8 8-10h-6l1-8z"/>', id:'<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M5.500 16c.6-1.700 1.900-2.500 3.500-2.500s2.900.8 3.500 2.500M15 10h3M15 13h3"/>',
- face:'<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.200 3 14.800 0 18M12 3c-3 3.200-3 14.800 0 18"/>',
- mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', phone:'<path d="M4 14c5-5 11-5 16 0l-2 3-3-1v-2.500c-2-.7-4-.7-6 0V16l-3 1-2-3z"/>',
- star:'<path d="M12 3l2.800 5.800 6.200.9-4.500 4.400 1 6.200L12 17.300 6.500 20.300l1-6.200L3 9.700l6.200-.9z"/>', pin:'<path d="M12 21s-6-5.500-6-10a6 6 0 0 1 12 0c0 4.500-6 10-6 10z"/><circle cx="12" cy="11" r="2"/>'
+ heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>', chat:'<path d="M4 5h16v11H10l-6 4V5z"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.500 2 8 6"/>', back:'<path d="M15 5l-7 7 7 7"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ check:'<path d="M5 12l5 5 9-10"/>', shield:'<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+ filter:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', more:'<circle cx="5" cy="12" r="1.500"/><circle cx="12" cy="12" r="1.500"/><circle cx="19" cy="12" r="1.500"/>',
+ send:'<path d="M5 12h14M13 6l6 6-6 6"/>', lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+ id:'<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M5.500 16c.6-1.700 1.900-2.500 3.500-2.500s2.900.8 3.500 2.500M15 10h3M15 13h3"/>', face:'<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15q3 2 6 0"/>',
+ star:'<path d="M12 3l2.800 5.800 6.200.9-4.500 4.400 1 6.200L12 17.300 6.500 20.300l1-6.200L3 9.700l6.200-.9z"/>'
 };
-const chk = c => ic(D.check, c||'currentColor', 13).replace('stroke-width="2"','stroke-width="3"');
+const chk = () => ic(D.check,'currentColor',13).replace('stroke-width="2"','stroke-width="3"');
 
-/* ================= matching ================= */
-function score(f){
-  const k = kid(); let best = {s:-1};
-  f.kids.forEach(o => {
-    const shared = o.i.filter(x => (k.interests||[]).includes(x)), gap = Math.abs(o.a - k.age);
-    const lang = f.langs.filter(x => S.me.langs.includes(x)), pref = f.prefs.filter(x => S.me.prefs.includes(x));
-    let s = 46 + Math.min(shared.length,3)*11 + (gap<=1?13:gap<=2?7:gap<=3?2:-8) + (lang.length?5:0) + (pref.length?5:0);
-    s = Math.max(30, Math.min(98, s));
-    if (s > best.s) best = {s, shared, gap, lang, pref, child:o};
-  });
-  return best;
-}
+/* ===== deck ===== */
 function pool(){
-  const home = S.me.country === 'United Kingdom' ? UK : BD, away = S.me.country === 'United Kingdom' ? BD : UK;
-  if (S.scope === 'Nearby') return home.filter(f => f.km <= 15);
-  if (S.scope === 'National') return home;
-  return INTL.concat(away.slice(0,4));
+  const f = S.filt;
+  return PEOPLE.filter(p => p.age >= f.min && p.age <= f.max && p.km <= f.km && (S.mode==='friends' || S.me.show==='everyone' || p.g === (S.me.show==='women'?'woman':'man')));
 }
-function deck(){
-  let l = pool().filter(f => !S.seen[f.id]);
-  if (plan().filters){ const t = S.filt;
-    if (t.mode !== 'Any') l = l.filter(f => f.mode === 'Both' || f.mode === t.mode);
-    if (t.lang !== 'Any') l = l.filter(f => f.langs.includes(t.lang));
-    if (t.pref !== 'Any') l = l.filter(f => f.prefs.includes(t.pref)); }
-  const boosted = Date.now() < S.boostUntil;
-  const key = f => S.sort==='Age' ? score(f).gap : S.sort==='Distance' ? (f.km==null?99999:f.km) : -score(f).s;
-  return l.slice().sort((a,b) => key(a)-key(b) || a.id.localeCompare(b.id));
-}
-const likesMe = f => f.likes || S.extraLikes.includes(f.id);
-const dist = f => f.km == null ? f.country : f.km + ' km away';
+const deck = () => pool().filter(p => !S.seen[key(p.id)]);
+const likesMe = p => p.likes || S.extraLikes.includes(p.id);
+const likers = () => pool().filter(p => likesMe(p) && !S.chats[p.id] && S.seen[key(p.id)] !== 'like');
+const shared = p => p.tags.filter(t => S.me.interests.includes(t));
 
-/* ================= screens ================= */
+/* ===== screens ===== */
 function welcome(){
-  const mc = f => `<div class="mcard">${art(f,{still:true})}<div class="lbl">${esc(f.parent)} + ${esc(f.kids[0].n)}<span>${esc(f.country)} · Verified</span></div></div>`;
-  const r1 = BD.slice(0,4).concat(INTL.slice(0,3)).map(mc).join(''), r2 = UK.slice(0,4).concat(INTL.slice(3), BD.slice(4,6)).map(mc).join('');
+  const mc = p => `<div class="mcard">${art(p,{still:true})}<div class="lbl">${esc(p.name)}, ${p.age}<span>${esc(p.job)} · Verified</span></div></div>`;
+  const r1 = PEOPLE.slice(0,7).map(mc).join(''), r2 = PEOPLE.slice(7).map(mc).join('');
   return `<section class="st" style="height:100%;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 54px) 26px calc(env(safe-area-inset-bottom) + 30px);gap:18px">
-   <div style="display:flex;justify-content:space-between;align-items:center"><div class="logo">${logo(38)}<span>PlayDu</span></div><span class="badge b-teal">${chk()} ID-verified parents</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center"><div class="logo">${logo(38)}<span>PlayDu</span></div><span class="badge b-teal">${chk()} Verified members</span></div>
    <div style="display:flex;flex-direction:column;gap:12px"><div class="marq"><div class="track">${r1}${r1}</div></div><div class="marq rev"><div class="track">${r2}${r2}</div></div></div>
-   <div><h1 class="h1" style="font-size:35px">Empowering play. <em>Safely.</em></h1><p class="sub" style="font-size:15px;margin-top:10px">Connect with verified parents and set up enriching playdates for your children — around the corner or across the world.</p></div>
-   <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
-    <button class="btn primary" data-a="start">Sign up</button>
-    <button class="btn ghost" data-a="skip">Explore the demo first</button>
-    <p style="margin:2px 0 0;text-align:center;font-size:12px;color:var(--muted);font-weight:600">For parents and guardians of children aged 0–17</p></div></section>`;
-}
-function kidForm(i){
-  const k = S.kids[i];
-  return `<label class="label" for="kn">Child’s first name</label><input id="kn" class="input" data-bind="kid.name" data-i="${i}" value="${esc(k.name)}" placeholder="First name only">
-   <div class="label">Age</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="stepper"><button data-a="age" data-v="-1" data-i="${i}" aria-label="Younger">−</button><b>${k.age}</b><button data-a="age" data-v="1" data-i="${i}" aria-label="Older">+</button></div><span class="badge b-butter">${level(k.age)}</span></div>
-   <div class="label">Gender</div><div class="chips">${['Girl','Boy','Prefer not to say'].map(g=>`<button class="chip ${k.gender===g?'on':''}" data-a="kset" data-k="gender" data-v="${g}" data-i="${i}">${g}</button>`).join('')}</div>
-   <div class="label">Interests (pick up to 5)</div><div class="chips">${INTERESTS.map(x=>`<button class="chip ${k.interests.includes(x)?'on':''}" data-a="ktog" data-k="interests" data-v="${x}" data-i="${i}">${x}</button>`).join('')}</div>
-   <div class="label">Learning goals</div><div class="chips">${LGOALS.map(x=>`<button class="chip ${k.goals.includes(x)?'on':''}" data-a="ktog" data-k="goals" data-v="${x}" data-i="${i}">${x}</button>`).join('')}</div>`;
+   <div><h1 class="h1" style="font-size:35px">Meet someone <em>real.</em></h1><p class="sub" style="font-size:15px;margin-top:10px">Dating and friendship for everyone 18 and over. Every member is ID-verified.</p></div>
+   <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><button class="btn primary" data-a="start">Create my account</button><button class="btn ghost" data-a="skip">Explore the demo first</button>
+    <p style="margin:2px 0 0;text-align:center;font-size:12px;color:var(--muted);font-weight:600">Strictly 18+ · Everyone is welcome</p></div></section>`;
 }
 function verifyBlock(){
   const v = S.ver, row = (k, icon, t, d) => `<button class="vstep ${v[k]?'done':''} ${v.busy===k?'busy':''}" data-a="verify" data-v="${k}" ${v[k]||v.busy?'disabled':''}><span class="vico">${v[k]?ic(D.check,'#2E7D4F'):ic(icon,'#B32D17')}</span><span class="grow"><span class="t-name" style="display:block">${t}</span><span class="t-meta" style="display:block;white-space:normal">${v.busy===k?'Checking…':v[k]?'Done':d}</span></span></button>`;
-  return `${row('id',D.id,'Government ID','Passport or national ID')}${row('selfie',D.face,'Live selfie check','Proves it is really you, not a photo')}${row('child',D.people,'Photo of your child with your ID','Confirms you are the parent or guardian')}
-   ${S.me.verified ? `<div class="card" style="display:flex;gap:12px;align-items:center;border-color:var(--green);background:#F3FAEF;animation:enterUp .5s var(--ease)">${ic(D.shield,'#2E7D4F',28)}<div><div class="t-name">You’re verified</div><div class="t-meta" style="white-space:normal">PlayDu only receives pass or fail. Your documents are never stored.</div></div></div>`
-    : v.review ? `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing" style="border:0;padding:0;background:none"><i></i><i></i><i></i></span><div class="t-name">Manual review in progress…</div></div>` : ''}`;
+  return `${row('id',D.id,'Government ID','NID or passport — confirms you are 18 or over')}${row('selfie',D.face,'Live selfie check','Proves it is really you, not a photo')}
+   ${S.me.verified ? `<div class="card" style="display:flex;gap:12px;align-items:center;border-color:var(--green);background:#F3FAEF;animation:enterUp .5s var(--ease)">${ic(D.shield,'#2E7D4F',28)}<div><div class="t-name">You’re verified</div><div class="t-meta" style="white-space:normal">Your ID is never shown on your profile.</div></div></div>` : v.review ? `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing" style="border:0;padding:0;background:none"><i></i><i></i><i></i></span><div class="t-name">Reviewing…</div></div>` : ''}`;
 }
+const obOk = () => { const me = S.me; return S.step===0 ? /\S+@\S+\.\S+/.test(S.acct.email) && S.acct.adult : S.step===1 ? me.name.trim().length>1 && me.age>=18 && me.age<=99 : S.step===2 ? me.verified : me.interests.length>=3; };
 function onboarding(){
-  const st = S.step, me = S.me; let body='', ok=true, cta='Continue';
-  if (st===0){
-    body = `<h1 class="h1">Parent <em>sign up</em></h1><p class="sub">One account per parent or guardian.</p>
-     <label class="label" for="em">Email</label><input id="em" class="input" type="email" data-bind="acct.email" value="${esc(S.acct.email)}" placeholder="you@example.com">
-     <label class="label" for="pw">Password</label><input id="pw" class="input" type="password" value="demo-password">
-     <div class="label">Country</div><div class="chips">${['Bangladesh','United Kingdom'].map(c=>`<button class="chip ${me.country===c?'on':''}" data-a="meset" data-k="country" data-v="${c}">${c}</button>`).join('')}<span class="chip" style="display:inline-flex;align-items:center;color:var(--muted);border-style:dashed">More of Europe soon</span></div>
-     <label class="card" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;${S.acct.pledge?'border-color:var(--green);background:#F3FAEF':''}"><input type="checkbox" data-a="pledge" ${S.acct.pledge?'checked':''} style="width:22px;height:22px;margin-top:2px;accent-color:#E5422B;flex:none"><span style="font-size:14px;line-height:1.55"><strong>I agree to the community safety pledge.</strong> I will keep children safe, be honest about who I am, and report anything that worries me.</span></label>`;
-    ok = /\S+@\S+\.\S+/.test(S.acct.email) && S.acct.pledge;
-  } else if (st===1){
-    body = `<h1 class="h1">About <em>you</em></h1>
-     <label class="label" for="nm">Your first name</label><input id="nm" class="input" data-bind="me.name" value="${esc(me.name)}" placeholder="First name">
-     <div class="label">Relationship to child</div><div class="chips">${['Mother','Father','Guardian'].map(r=>`<button class="chip ${me.rel===r?'on':''}" data-a="meset" data-k="rel" data-v="${r}">${r}</button>`).join('')}</div>
-     <div class="label">Languages spoken at home</div><div class="chips">${LANGS.map(x=>`<button class="chip ${me.langs.includes(x)?'on':''}" data-a="metog" data-k="langs" data-v="${x}">${x}</button>`).join('')}</div>
-     <div class="label">I’m looking for playdates focused on</div><div class="chips">${PREFS.map(x=>`<button class="chip ${me.prefs.includes(x)?'on':''}" data-a="metog" data-k="prefs" data-v="${x}">${x}</button>`).join('')}</div>`;
-    ok = me.name.trim().length>1 && me.langs.length>0 && me.prefs.length>0;
-  } else if (st===2){
-    body = `<h1 class="h1">Verify to keep PlayDu <em>safe</em></h1><p class="sub">Every parent is verified before they can match or chat. Tap each step (demo).</p>${verifyBlock()}`;
-    ok = me.verified;
-  } else if (st===3){
-    body = `<h1 class="h1">Your <em>child</em></h1><p class="sub">Only what helps find a good playmate. You control what other parents see.</p>${kidForm(0)}`;
-    ok = S.kids[0].name.trim().length>0 && S.kids[0].interests.length>0;
-  } else {
-    body = `<h1 class="h1">Private by <em>default</em></h1><p class="sub">Child profiles start on the most restrictive settings. Change them any time.</p><div class="card" style="padding:4px 16px">${permRows()}</div>
-     <div class="card" style="display:flex;gap:12px;align-items:center">${kava(kidName(S.kids[0]),52)}<div class="grow"><div class="t-name">${esc(kidName(S.kids[0]))}, ${S.kids[0].age}</div><div class="t-meta" style="white-space:normal">${level(S.kids[0].age)} · ${esc(S.kids[0].interests.join(', '))}</div></div></div>`;
-    cta = 'Find playmates';
-  }
-  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:6px"><button class="iconbtn" data-a="obBack" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button><div class="progress">${[0,1,2,3,4].map(i=>`<div class="${i<=st?'on':''}"></div>`).join('')}</div></div>
+  const st = S.step, me = S.me; let body='';
+  if (st===0) body = `<h1 class="h1">Create your <em>account</em></h1><p class="sub">It takes about a minute.</p>
+    <label class="label" for="em">Email</label><input id="em" class="input" type="email" data-bind="acct.email" value="${esc(S.acct.email)}" placeholder="you@example.com">
+    <label class="label" for="pw">Password</label><input id="pw" class="input" type="password" value="demo-password">
+    <label class="card" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;${S.acct.adult?'border-color:var(--green);background:#F3FAEF':''}"><input type="checkbox" data-a="adult" ${S.acct.adult?'checked':''} style="width:22px;height:22px;margin-top:2px;accent-color:#E5422B;flex:none"><span style="font-size:14px;line-height:1.55"><strong>I am 18 or over</strong> and I agree to treat everyone with respect.</span></label>`;
+  else if (st===1) body = `<h1 class="h1">About <em>you</em></h1>
+    <label class="label" for="nm">First name</label><input id="nm" class="input" data-bind="me.name" value="${esc(me.name)}" placeholder="First name">
+    <div class="label">Age</div><div style="display:flex;align-items:center;justify-content:space-between"><div class="stepper"><button data-a="age" data-v="-1" aria-label="Younger">−</button><b>${me.age}</b><button data-a="age" data-v="1" aria-label="Older">+</button></div><span class="badge b-butter">18+ only</span></div>
+    <div class="label">I am a</div><div class="chips">${[['woman','Woman'],['man','Man'],['other','Non-binary']].map(([v,l])=>`<button class="chip ${me.gender===v?'on':''}" data-a="meset" data-k="gender" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="label">Show me</div><div class="chips">${[['women','Women'],['men','Men'],['everyone','Everyone']].map(([v,l])=>`<button class="chip ${me.show===v?'on':''}" data-a="meset" data-k="show" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="label">Looking for</div><div class="chips">${LOOKING.map(x=>`<button class="chip ${me.looking===x?'on':''}" data-a="meset" data-k="looking" data-v="${x}">${x}</button>`).join('')}</div>`;
+  else if (st===2) body = `<h1 class="h1">Verify it’s <em>really</em> you</h1><p class="sub">Everyone on PlayDu is verified. Tap each step (demo).</p>${verifyBlock()}`;
+  else body = `<h1 class="h1">What do you <em>enjoy?</em></h1><p class="sub">Pick at least 3. We use these to find people you will click with.</p><div class="chips">${INTERESTS.map(x=>`<button class="chip ${me.interests.includes(x)?'on':''}" data-a="int" data-v="${x}">${x}</button>`).join('')}</div>`;
+  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:6px"><button class="iconbtn" data-a="obBack" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button><div class="progress" style="grid-template-columns:repeat(4,minmax(0,1fr))">${[0,1,2,3].map(i=>`<div class="${i<=st?'on':''}"></div>`).join('')}</div></div>
    <div class="scroll st" style="display:flex;flex-direction:column;gap:12px;padding-top:10px">${body}</div>
-   <div style="padding:12px 20px calc(env(safe-area-inset-bottom) + 26px)"><button class="btn primary" id="obNext" data-a="obNext" ${ok?'':'disabled'}>${cta}</button></div></section>`;
+   <div style="padding:12px 20px calc(env(safe-area-inset-bottom) + 26px)"><button class="btn primary" id="obNext" data-a="obNext" ${obOk()?'':'disabled'}>${st===3?'Start meeting people':'Continue'}</button></div></section>`;
 }
-function permRows(){
-  const rows = [['photo','Show my child’s photo','Off: other parents see an avatar only'],['name','Show first name','Off: shows an initial until you match'],['level','Show school level','Toddler, preschool, elementary…'],['goals','Show learning goals','Helps find the right playmate']];
-  return rows.map(([k,l,h])=>`<div class="setrow"><div class="grow"><div class="t-name">${l}</div><div class="t-meta" style="white-space:normal">${h}</div></div><button class="switch ${S.perms[k]?'on':''}" role="switch" aria-checked="${!!S.perms[k]}" aria-label="${esc(l)}" data-a="perm" data-v="${k}"><span></span></button></div>`).join('');
-}
-
 let lastCard = '';
 function discover(){
-  const list = deck(), f = list[0], nx = list[1], lim = plan().swipes, L = left(), k = kid();
-  const scopes = ['Nearby','National','International'];
-  const head = `<div class="top" style="padding-bottom:10px"><div class="logo">${logo(32)}<span>PlayDu</span></div>
-     <div style="display:flex;gap:8px;align-items:center">${S.kids.length>1?`<button class="kid dark" data-a="sheet" data-v="kidpick" style="border:0">${kava(kidName(k),28)}${esc(kidName(k))} ▾</button>`:`<span class="kid dark">${kava(kidName(k),28)}${esc(kidName(k))}, ${k.age}</span>`}<button class="iconbtn" data-a="sheet" data-v="filters" aria-label="Filters">${ic(D.filter,'#2B1B12',20)}</button></div></div>
-   <div style="padding:0 20px 10px"><div class="seg">${scopes.map(s=>`<button class="${S.scope===s?'on':''}" data-a="scope" data-v="${s}">${s==='International'&&!plan().intl?ic(D.lock,'currentColor',13):''}${s}</button>`).join('')}</div></div>
-   <div class="sorttabs">${['Goals','Age','Distance'].map(s=>`<button class="${S.sort===s?'on':''}" data-a="sort" data-v="${s}">${s==='Goals'?'Best match':s}</button>`).join('')}<span class="grow"></span><span style="align-self:center;font-size:12px;font-weight:700;color:var(--muted);padding-bottom:4px">${L===Infinity?'Unlimited swipes':`${L} of ${lim} swipes left`}</span></div>`;
+  const modes = [['date','Date'],['friends','Friends']].filter(([k])=>S.me[k]);
+  if (!S.me[S.mode] && modes.length) S.mode = modes[0][0];
+  const list = deck(), p = list[0], nx = list[1], lim = plan().swipes, L = left();
+  const head = `<div class="top" style="padding-bottom:10px"><div class="logo">${logo(32)}<span>PlayDu</span></div><button class="iconbtn" data-a="sheet" data-v="filters" aria-label="Filters">${ic(D.filter,'#2B1B12',20)}</button></div>
+   <div style="padding:0 20px 10px;display:flex;align-items:center;gap:12px">${modes.length>1?`<div class="seg" style="flex:none;width:170px">${modes.map(([k,l])=>`<button class="${S.mode===k?'on':''}" data-a="mode" data-v="${k}">${l}</button>`).join('')}</div>`:''}<div class="grow" style="text-align:right;font-size:13px;font-weight:700;color:var(--muted)"><span style="color:var(--ink);font-family:var(--display);font-size:18px">${L}</span> of ${lim} swipes left today</div></div>
+   <div class="parade-bar">${Array.from({length:Math.min(lim,20)},(_,i)=>`<i class="${i < Math.round(S.used*Math.min(lim,20)/lim)?'done':''}"></i>`).join('')}</div>`;
   let body;
-  if (L <= 0){
-    body = `<div class="empty"><div class="ring-wrap"><svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="none" stroke="#F6DDA4" stroke-width="10"/><circle id="cdRing" cx="100" cy="100" r="88" fill="none" stroke="#E5422B" stroke-width="10" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553" style="transition:stroke-dashoffset 1s linear"/></svg><div class="c"><span class="label">More swipes in</span><span id="cd" style="font-family:var(--display);font-weight:600;font-size:34px">--:--:--</span><span class="sub" style="margin:0">resets at midnight</span></div></div>
-     <h2 class="h2">That’s today’s ${lim} swipes</h2><p class="sub" style="margin:0">Free members get ${lim} national swipes a day. Your matches and chats are still open.</p><button class="btn primary" data-a="go" data-v="plus" style="width:auto">Go Premium for unlimited swipes</button></div>`;
-  } else if (!f){
-    const passed = Object.values(S.seen).includes('pass');
-    body = `<div class="empty">${ic(D.people,'#E5422B',56)}<h2 class="h2">You’ve seen every family here</h2><p class="sub" style="margin:0">${S.scope==='Nearby'?'Try National to reach more families in your country.':'Change your filters, or look again at families you passed.'}</p>
-     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${S.scope==='Nearby'?`<button class="btn primary" data-a="scope" data-v="National" style="width:auto">Search nationally</button>`:''}${passed?`<button class="btn ghost" data-a="repass" style="width:auto">Show passed families again</button>`:''}</div></div>`;
-  } else {
-    const sc = score(f), pg = S.page % 3, isNew = lastCard !== f.id; lastCard = f.id; const C = 2*Math.PI*46;
-    const inner = pg===0 ? '' : pg===1
-     ? `<div class="why"><div class="mring"><svg width="108" height="108" viewBox="0 0 108 108"><circle cx="54" cy="54" r="46" fill="rgba(43,27,18,.35)" stroke="rgba(255,251,242,.35)" stroke-width="8"/><circle class="v" cx="54" cy="54" r="46" fill="none" stroke="#FFF4DC" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-to="${C*(1-sc.s/100)}"/></svg><b>${sc.s}%<small>MATCH</small></b></div>
-        <div class="panel"><div class="label">Why ${esc(kidName(k))} and ${esc(sc.child.n)} match</div><div class="chips">${sc.shared.map(x=>`<span class="badge b-red">Both love ${esc(x)}</span>`).join('') || '<span class="badge b-butter">Different interests to discover</span>'}<span class="badge b-teal">${sc.gap===0?'Same age':sc.gap+' year'+(sc.gap>1?'s':'')+' apart'}</span>${sc.lang.length?`<span class="badge b-lav">Shared language: ${esc(sc.lang[0])}</span>`:''}${sc.pref.length?`<span class="badge b-butter">Both want: ${esc(sc.pref[0])}</span>`:''}</div></div></div>`
-     : `<div class="why"><div class="panel"><div class="label">From ${esc(f.parent)}</div><div style="font-size:15px;line-height:1.5">“${esc(f.bio)}”</div></div>
-        <div class="panel" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${[['Languages',f.langs.join(', ')],['Playdates',f.mode==='Both'?'In person or virtual':f.mode],['Looking for',f.prefs.join(', ')],['Where',f.city]].map(([a,b])=>`<div><div class="label" style="font-size:10.5px">${a}</div><div style="font-size:13.500px;font-weight:600">${esc(b)}</div></div>`).join('')}</div></div>`;
-    body = `<div class="deck">${nx?`<div class="pcard back" id="next-card" aria-hidden="true">${art(nx,{still:true})}</div>`:''}
-     <article class="pcard ${isNew?'rise':''}" id="top-card" aria-label="${esc(f.parent)}’s family. Tap the sides for more.">
-      ${art(f,{noFig:pg!==0})}
+  if (L <= 0) body = `<div class="empty"><div class="ring-wrap"><svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="none" stroke="#F6DDA4" stroke-width="10"/><circle id="cdRing" cx="100" cy="100" r="88" fill="none" stroke="#E5422B" stroke-width="10" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553" style="transition:stroke-dashoffset 1s linear"/></svg><div class="c"><span class="label">More swipes in</span><span id="cd" style="font-family:var(--display);font-weight:600;font-size:34px">--:--:--</span><span class="sub" style="margin:0">resets at midnight</span></div></div>
+    <h2 class="h2">You’ve used today’s ${lim} swipes</h2><p class="sub" style="margin:0">${plan().name} includes ${lim} swipes a day. Your matches and chats are still open.</p>${S.plan==='gold'?'':`<button class="btn primary" data-a="go" data-v="plus" style="width:auto">Get more swipes</button>`}</div>`;
+  else if (!p) body = `<div class="empty">${ic(D.heart,'#E5422B',56)}<h2 class="h2">You’ve seen everyone for now</h2><p class="sub" style="margin:0">Widen your filters or look again at people you passed.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn ghost" data-a="sheet" data-v="filters" style="width:auto">Adjust filters</button><button class="btn ghost" data-a="repass" style="width:auto">Show passed again</button></div></div>`;
+  else { const pg = S.page % 3, isNew = lastCard !== key(p.id), sh = shared(p); lastCard = key(p.id);
+    const inner = pg===0 ? '' : pg===1 ? `<div class="quote"><span class="label" style="color:#FFE3C2">In ${esc(p.name)}’s words</span><div class="q" style="font-style:normal;font-weight:500">“${esc(p.prompt)}”</div></div>`
+      : `<div class="facts">${[['Work',p.job],['Area',p.area+' · '+p.km+' km'],['Looking for',S.mode==='friends'?'Friendship':p.looking],['In common',sh.length?sh.join(', '):'Something new']].map(([a,b])=>`<div class="fact"><b>${a}</b>${esc(b)}</div>`).join('')}</div>`;
+    body = `${nx?`<div class="pcard back" id="next-card" aria-hidden="true">${art(nx,{still:true})}</div>`:''}
+     <article class="pcard ${isNew?'rise':''}" id="top-card" aria-label="${esc(p.name)}, ${p.age}. Tap the sides for more.">${art(p,{noFig:pg!==0})}
       <div class="bars">${[0,1,2].map(i=>`<i class="${i===pg?'on':''}"></i>`).join('')}</div>
-      <div class="toprow"><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge b-glass" style="color:var(--green)">${chk()} Verified</span>${f.bg?`<span class="badge b-butter">${ic(D.shield,'currentColor',13)} Background checked</span>`:''}${f.mentor?'<span class="badge b-lav">Experienced parent</span>':''}</div><span class="badge b-ink">${sc.s}% match</span></div>
-      ${inner}
-      <div class="stamp like">CONNECT</div><div class="stamp nope">PASS</div><div class="shade"></div>
-      <div class="info"><div class="nm" style="font-size:28px;font-weight:600">${esc(f.parent)} <span style="font-style:normal;font-size:16px;font-weight:500;opacity:.9">· ${esc(f.rel)}</span></div>
-       <div style="display:flex;flex-wrap:wrap;gap:6px">${f.kids.map(o=>`<span class="kid">${kava(o.n,26)}${esc(o.n)}, ${o.a}</span>`).join('')}</div>
-       ${pg===0?`<div class="meta">${esc(dist(f))} · ${esc(f.city)} · ${f.mode==='Both'?'In person or virtual':esc(f.mode)}</div>
-       <div class="meta" style="color:#FFFBF2"><strong>Shared interests:</strong> ${sc.shared.length?esc(sc.shared.join(', ')):'none yet — something new to try'}</div>`:''}</div>
-     </article></div>
-     <div class="actions"><button class="round" style="width:64px;height:64px" data-a="swipe" data-v="pass" aria-label="Pass">${ic(D.x,'#76604F',26)}</button>
-      <button class="btn dark" data-a="page" style="width:auto;min-height:48px;border-radius:999px;padding:0 20px;font-size:14px">Learn more</button>
-      <button class="round like" style="width:76px;height:76px" data-a="swipe" data-v="like" aria-label="Connect">${ic(D.home,'#fff',30,'#fff')}</button></div>`;
-  }
-  return `<section style="height:100%;display:flex;flex-direction:column">${head}${S.me.verified?'':`<button data-a="sheet" data-v="verify" style="margin:10px 20px 0;border:0;border-radius:14px;background:var(--ink);color:var(--cream);padding:10px 14px;font-weight:700;font-size:13px;text-align:left;display:flex;gap:8px;align-items:center">${ic(D.shield,'#FFD27A',18)} Browse only — verify to connect with families</button>`}${body.startsWith('<div class="deck"')?body:`<div class="deck" style="margin-top:0">${body}</div>`}</section>`;
+      <div class="toprow"><span class="badge b-glass" style="color:var(--green)">${chk()} Verified</span>${sh.length?`<span class="badge b-ink">${sh.length} in common</span>`:''}</div>${inner}
+      <div class="stamp like">${S.mode==='friends'?'FRIEND':'LIKE'}</div><div class="stamp nope">PASS</div><div class="shade"></div>
+      <div class="info"><div class="nm" style="font-weight:600">${esc(p.name)} <span style="font-style:normal">${p.age}</span></div><div class="meta">${esc(p.job)} · ${esc(p.area)} · ${p.km} km away</div>
+       <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="tag" style="background:var(--grad);border-color:transparent">${S.mode==='friends'?'Friendship':esc(p.looking)}</span>${p.tags.map(x=>`<span class="tag" ${sh.includes(x)?'style="background:rgba(255,210,122,.35);border-color:#FFD27A"':''}>${esc(x)}</span>`).join('')}</div></div></article>`; }
+  return `<section style="height:100%;display:flex;flex-direction:column">${head}${S.me.verified?'':`<button data-a="sheet" data-v="verify" style="margin:10px 20px 0;border:0;border-radius:14px;background:var(--ink);color:var(--cream);padding:10px 14px;font-weight:700;font-size:13px;text-align:left;display:flex;gap:8px;align-items:center">${ic(D.shield,'#FFD27A',18)} Browsing as a guest — verify to like and match</button>`}
+   <div class="deck">${body}</div>
+   ${p && L>0 ? `<div class="actions"><button class="round" style="width:50px;height:50px" data-a="rewind" aria-label="Rewind last pass">${ic(D.undo,'#B87A12',20)}${plan().rewind?'':`<small>${ic(D.lock,'currentColor',10)}</small>`}</button><button class="round" style="width:66px;height:66px" data-a="swipe" data-v="pass" aria-label="Pass">${ic(D.x,'#76604F',28)}</button><button class="round like" style="width:78px;height:78px" data-a="swipe" data-v="like" aria-label="Like">${ic(D.heart,'#fff',32,'#fff')}</button><span style="width:50px"></span></div>` : '<div style="height:14px"></div>'}</section>`;
 }
-
-function evColor(e){ return e.kind==='community' ? '#7A63C7' : e.status==='pending' ? '#F47B2A' : e.status==='done' ? '#76604F' : '#1F8A7A'; }
-const myEvents = () => S.events.filter(e => e.kind==='playdate' || e.joined);
-function playdates(){
-  const base = new Date(); base.setDate(1); base.setMonth(base.getMonth()+S.calM); const y = base.getFullYear(), m = base.getMonth();
-  const first = (new Date(y,m,1).getDay()+6)%7, days = new Date(y,m+1,0).getDate(), cells = [];
-  for (let i=0;i<first;i++) cells.push(null); for (let d=1; d<=days; d++) cells.push(`${y}-${pad(m+1)}-${pad(d)}`); while (cells.length%7) cells.push(null);
-  const byDay = d => S.events.filter(e => e.date===d);
-  const sel = byDay(S.calSel), up = myEvents().filter(e => e.date >= today() && e.status!=='done').sort((a,b)=>a.date.localeCompare(b.date));
-  const evRow = e => `<div class="ev"><span class="bar" style="background:${evColor(e)}"></span><div class="grow"><div class="when">${nice(e.date)} · ${esc(e.time)} · ${esc(e.mode)}</div><div class="t-name" style="margin:2px 0">${esc(e.title)}</div><div class="t-meta" style="white-space:normal">${ic(D.pin,'currentColor',13)} ${esc(e.place)}${e.ages?' · ages '+esc(e.ages):''}</div>
-     <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${e.kind==='community'
-       ? `<button class="small-btn" data-a="join" data-v="${e.id}" style="${e.joined?'background:var(--lav-soft);color:#5540A8':'background:var(--lav);color:#fff'}">${e.joined?'Joined ✓':'Join event'}</button>`
-       : e.status==='pending' ? `<span class="badge b-butter">Waiting for ${esc(e.with)}</span>`
-       : e.status==='done' ? `<span class="badge b-green">${chk()} Completed</span>`
-       : `<button class="small-btn" data-a="done" data-v="${e.id}" style="background:var(--teal);color:#fff">Mark as done</button>${e.mode==='Virtual'?`<button class="small-btn" data-a="callFrom" data-v="${e.fid}" style="background:var(--cream-2)">Start video</button>`:''}`}</div></div></div>`;
-  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:8px"><div><h1 class="h1">Play<em>dates</em></h1><p class="sub">Your calendar of playdates and community events.</p></div></div>
-  <div class="scroll st" style="display:flex;flex-direction:column;gap:14px">
-   <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><button class="iconbtn" data-a="calM" data-v="-1" aria-label="Previous month" style="width:40px;height:40px">${ic(D.back,'#2B1B12',18)}</button><div class="h2" style="font-size:18px">${MON[m]} ${y}</div><button class="iconbtn" data-a="calM" data-v="1" aria-label="Next month" style="width:40px;height:40px;transform:scaleX(-1)">${ic(D.back,'#2B1B12',18)}</button></div>
-    <div class="cal">${DOW.map(d=>`<span class="dow">${d[0]}</span>`).join('')}${cells.map(d => d ? `<button class="${d===today()?'today ':''}${d===S.calSel?'sel':''}" data-a="calSel" data-v="${d}" aria-label="${nice(d)}">${Number(d.slice(8))}<span class="dots">${byDay(d).slice(0,3).map(e=>`<i style="background:${d===S.calSel?'#FFD27A':evColor(e)}"></i>`).join('')}</span></button>` : '<span></span>').join('')}</div>
-    <div style="display:flex;gap:12px;margin-top:10px;font-size:11.5px;font-weight:700;color:var(--muted);flex-wrap:wrap"><span><i style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#1F8A7A"></i> Playdate</span><span><i style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#F47B2A"></i> Awaiting reply</span><span><i style="display:inline-block;width:8px;height:8px;border-radius:8px;background:#7A63C7"></i> Community event</span></div></div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="btn primary" data-a="addPd" style="min-height:52px;font-size:14.500px">${ic(D.plus,'#fff',18)} Add playdate</button><button class="btn ghost" data-a="sheet" data-v="newEvent" style="min-height:52px;font-size:14.500px">${ic(D.people,'#2B1B12',18)} Create event</button></div>
-   <h2 class="h2">${nice(S.calSel)}</h2>
-   ${sel.length ? `<div class="list">${sel.map(evRow).join('')}</div>` : '<div class="card sub" style="margin:0;text-align:center">Nothing planned on this day.</div>'}
-   <h2 class="h2">Coming up</h2>
-   ${up.length ? `<div class="list">${up.map(evRow).join('')}</div>` : '<div class="card sub" style="margin:0">No playdates yet. Match with a family, then tap “Add playdate”.</div>'}
-   <div class="card" style="background:var(--teal-soft);border-color:#B5E0D6;font-size:13.500px;line-height:1.55;color:#12695C"><strong>Safety first:</strong> always meet in a public place for the first in-person playdate, and tell a trusted friend or family member your plans.</div>
-  </div></section>`;
-}
-
-function community(){
-  const tabs = ['Boards','Experts','Ideas']; let body = '';
-  if (S.comTab==='Boards'){
-    const th = S.threads.filter(t => S.board==='All' || t.board===S.board);
-    body = `<div class="chips row">${BOARDS.map(b=>`<button class="chip ${S.board===b?'on':''}" data-a="board" data-v="${b}">${b}</button>`).join('')}</div>
-     <div class="card" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px"><div style="display:flex;gap:10px;align-items:flex-start">${ava({pal:ME_PAL},36)}<textarea id="composer" class="input" maxlength="140" placeholder="Ask other parents something…" aria-label="New post">${esc(S.draft)}</textarea></div>
-      <div style="display:flex;justify-content:space-between;align-items:center"><span class="sub" style="margin:0;font-size:12px">Posting in ${esc(S.board==='All'?'Toddler sleep':S.board)}</span><button class="small-btn" style="background:var(--grad);color:#fff" data-a="post">Post</button></div></div>
-     ${plan().ads?`<div class="sponsor"><span class="badge b-butter">Sponsored</span><span>[Child-friendly brand slot] · Platinum members see no ads</span></div>`:''}
-     ${th.map(t=>`<article class="card" style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="badge b-butter">${esc(t.board)}</span>${t.mentor?'<span class="badge b-lav">Experienced parent</span>':''}<span class="t-meta" style="margin-left:auto">${esc(t.time)}</span></div>
-       <div style="font-weight:700;font-size:15.500px;line-height:1.4">${esc(t.t)}</div>
-       <div style="display:flex;gap:16px;align-items:center;font-size:13px;font-weight:700;color:var(--muted)"><span>${esc(t.who)}</span><span>${t.r} replies</span><button class="sup ${popId===t.id?'pop':''}" data-a="helpful" data-v="${t.id}" style="border:0;background:none;margin-left:auto;font-weight:700;font-size:13px;min-height:34px;color:${S.helpful[t.id]?'var(--red-deep)':'var(--muted)'}">${S.helpful[t.id]?'♥ Helpful':'♡ Helpful'}</button></div></article>`).join('') || '<div class="card sub" style="margin:0;text-align:center">No posts on this board yet.</div>'}`;
-  } else if (S.comTab==='Experts'){
-    body = `<h2 class="h2">Ask Me Anything sessions</h2><div class="list">${AMAS.map(a=>`<div class="ev"><span class="bar" style="background:var(--lav)"></span><div class="grow"><div class="when">${nice(iso(addDays(a.d)))} · 7:00 pm · Live Q&amp;A</div><div class="t-name" style="margin:2px 0">${esc(a.t)}</div><div class="t-meta">with a ${esc(a.who.toLowerCase())}</div><button class="small-btn" data-a="remind" data-v="${a.id}" style="margin-top:8px;${S.remind[a.id]?'background:var(--lav-soft);color:#5540A8':'background:var(--lav);color:#fff'}">${S.remind[a.id]?'Reminder set ✓':'Remind me'}</button></div></div>`).join('')}</div>
-     <h2 class="h2">Expert library</h2><div class="list ${plan().expert?'':'locked'}" style="border-radius:20px">${EXPERT.map(x=>`<div class="row-item"><div class="vico">${ic(D.star,'#B32D17')}</div><div class="grow"><div class="t-name" style="white-space:normal">${esc(x.t)}</div><div class="t-meta">${esc(x.d)}</div></div></div>`).join('')}
-      ${plan().expert?'':`<div class="veil"><span class="badge b-ink">${ic(D.lock,'currentColor',13)} Gold members</span><button class="btn primary" data-a="go" data-v="plus" style="width:auto;min-height:44px">Unlock expert content</button></div>`}</div>
-     <div class="card" style="display:flex;align-items:center;gap:12px"><div class="grow"><div class="t-name">I’m an experienced parent</div><div class="t-meta" style="white-space:normal">Show a badge and let newer parents ask you for advice</div></div><button class="switch ${S.me.mentor?'on':''}" role="switch" aria-checked="${S.me.mentor}" aria-label="Experienced parent" data-a="mentor"><span></span></button></div>`;
-  } else {
-    body = `<p class="sub" style="margin:0">Activity ideas for your next playdate.</p>${IDEAS.map((x,i)=>`<div class="card" style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge ${x.k==='Cultural Exchange'?'b-lav':x.k==='Fun'?'b-butter':x.k==='Special Needs'?'b-teal':'b-red'}">${esc(x.k)}</span><span class="badge b-glass" style="border:1px solid var(--line)">Ages ${x.a}</span></div><div class="t-name" style="font-size:16px">${esc(x.t)}</div><div class="t-meta" style="white-space:normal">${esc(x.d)}</div><button class="small-btn" data-a="saveIdea" data-v="${i}" style="align-self:flex-start;margin-top:4px;${S.saved[i]?'background:var(--green-soft);color:var(--green)':'background:var(--cream-2)'}">${S.saved[i]?'Saved ✓':'Save for a playdate'}</button></div>`).join('')}`;
-  }
-  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:8px"><div><h1 class="h1">Comm<em>unity</em></h1><p class="sub">Verified parents sharing what works.</p></div></div>
-   <div style="padding:0 20px 12px"><div class="seg">${tabs.map(x=>`<button class="${S.comTab===x?'on':''}" data-a="comTab" data-v="${x}">${x}</button>`).join('')}</div></div>
-   <div class="scroll st" style="display:flex;flex-direction:column;gap:12px">${body}</div></section>`;
-}
-
+const hoursLeft = c => Math.max(0, 24 - Math.floor((Date.now() - c.at)/3600000));
 function chats(){
-  const ids = Object.keys(S.chats).reverse();
-  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:8px"><div><h1 class="h1">Ch<em>ats</em></h1><p class="sub">Secure, in-app only. Phone numbers and emails stay private.</p></div></div>
+  const ids = Object.keys(S.chats).reverse(), lk = likers(), fresh = ids.filter(id => !S.chats[id].msgs.some(m=>m.me));
+  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top" style="padding-bottom:8px"><div><h1 class="h1">Ch<em>ats</em></h1><p class="sub">Matches fade after 24 hours without a message.</p></div></div>
   <div class="scroll st" style="display:flex;flex-direction:column;gap:14px">
-   ${ids.length ? `<div class="label">Your matched families</div><div class="chips row" style="gap:14px">${ids.map(id=>{const f=fam(id);return `<button data-a="open" data-v="${id}" style="border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:5px;width:70px;padding:0;flex:none"><span style="width:66px;height:66px;border-radius:99px;padding:3px;background:var(--grad)">${ava(f,60,'border:3px solid var(--cream)')}</span><span style="font-size:12.500px;font-weight:700">${esc(f.parent)}</span></button>`;}).join('')}</div>
-   <div class="label">Messages</div><div class="list">${ids.map(id=>{const c=S.chats[id],f=fam(id),l=c.msgs[c.msgs.length-1];
-     const prev = c.typing?'typing…':!l?'Say hello with a safe prompt':l.type==='pd'?'Playdate proposal':l.type==='call'?'Video call':l.type==='stick'?'Sticker':(l.me?'You: ':'')+l.text;
-     return `<button class="row-item" data-a="open" data-v="${id}">${ava(f,52)}<div class="grow"><div class="t-name">${esc(f.parent)} <span style="font-weight:500;color:var(--muted)">· ${esc(f.kids.map(k=>k.n).join(' & '))}</span> ${c.unread?'<span class="badge b-red" style="padding:2px 8px;margin-left:4px">New</span>':''}</div><div class="t-meta">${esc(prev)}</div></div></button>`;}).join('')}</div>`
-   : `<div class="empty" style="height:auto;padding:40px 12px">${ic(D.chat,'#E5422B',52)}<h2 class="h2">No matches yet</h2><p class="sub" style="margin:0">When you and another parent both tap Connect, you can chat here.</p><button class="btn primary" data-a="go" data-v="discover" style="width:auto">Find families</button></div>`}
+   <button class="row-item" data-a="likes" style="background:var(--ink);color:var(--cream);border:0;padding:14px"><div style="display:flex">${lk.slice(0,3).map((p,i)=>ava(p,40,`margin-left:${i?-12:0}px;border:2px solid var(--ink);${plan().likes?'':'filter:blur(5px)'}`)).join('') || ava({pal:['#4A3426','#2B1B12','#76604F']},40)}</div>
+    <div class="grow"><div class="t-name">${lk.length} ${lk.length===1?'person likes':'people like'} you</div><div style="font-size:12.5px;opacity:.8">${plan().likes?'Tap to see them and match':'See who with Premium or Gold'}</div></div>${plan().likes?'':`<span class="badge b-butter">${ic(D.lock,'currentColor',12)} Premium</span>`}</button>
+   ${ids.length ? `${fresh.length?`<div class="label">New matches</div><div class="chips row" style="gap:14px">${fresh.map(id=>{const p=person(id),c=S.chats[id];return `<button data-a="open" data-v="${id}" style="border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:5px;width:70px;padding:0;flex:none"><span style="width:66px;height:66px;border-radius:99px;padding:3px;background:conic-gradient(#E5422B ${hoursLeft(c)/24*360}deg,#F6DDA4 0)">${ava(p,60,'border:3px solid var(--cream)')}</span><span style="font-size:12.5px;font-weight:700">${esc(p.name)}</span><span style="font-size:11px;color:var(--muted);font-weight:600">${hoursLeft(c)}h left</span></button>`;}).join('')}</div>`:''}
+    <div class="label">Messages</div><div class="list">${ids.map(id=>{const c=S.chats[id],p=person(id),l=c.msgs[c.msgs.length-1];
+     const prev = c.typing?'typing…':c.locked?`${p.name} has 24h to say hello first`:!l?'Say hello':(l.me?'You: ':'')+l.text;
+     return `<button class="row-item" data-a="open" data-v="${id}">${ava(p,52)}<div class="grow"><div class="t-name">${esc(p.name)} ${c.unread?'<span class="badge b-red" style="padding:2px 8px;margin-left:4px">New</span>':''}</div><div class="t-meta">${esc(prev)}</div></div><span class="badge ${c.kind==='friends'?'b-teal':'b-red'}">${c.kind==='friends'?'Friend':'Date'}</span></button>`;}).join('')}</div>`
+   : `<div class="empty" style="height:auto;padding:30px 12px">${ic(D.chat,'#E5422B',52)}<h2 class="h2">No matches yet</h2><p class="sub" style="margin:0">When you both like each other, you can chat here.</p><button class="btn primary" data-a="go" data-v="discover" style="width:auto">Start swiping</button></div>`}
   </div></section>`;
 }
 function chat(){
-  const c = S.chats[S.openChat], f = fam(S.openChat); if (!c || !f){ S.screen='chats'; return chats(); }
-  const kn = f.kids[0].n;
-  const msgs = c.msgs.map((m,i)=>{ const old = i < (c.seen||0) ? ' old' : '';
-    if (m.type==='pd'){ const e = S.events.find(x=>x.id===m.ev); if (!e) return '';
-      return `<div class="pdcard${old}"><div class="ih">${ic(D.cal,'#fff',18)} Playdate proposal</div><div class="ib"><div style="font-weight:700">${nice(e.date)} · ${esc(e.time)}</div><div style="color:var(--muted)">${esc(e.mode)} · ${esc(e.place)}</div><div style="font-weight:700;font-size:12.500px;color:${e.status==='pending'?'var(--orange)':'var(--green)'}">${e.status==='pending'?'⏳ Waiting for reply':'✓ Accepted — added to both calendars'}</div></div></div>`; }
-    if (m.type==='call') return `<div class="sys">${ic(D.video,'currentColor',13)} ${esc(m.text)}</div>`;
-    if (m.type==='stick') return `<div class="stick ${m.me?'':'them'}${old}">${m.text}</div>`;
-    return `<div class="bubble ${m.me?'me':'them'}${old}">${esc(m.text)}</div>`; }).join('');
-  c.seen = c.msgs.length;
+  const c = S.chats[S.openChat], p = person(S.openChat); if (!c || !p){ S.screen='chats'; return chats(); }
+  const msgs = c.msgs.map((m,i)=>`<div class="bubble ${m.me?'me':'them'}${i<(c.seen||0)?' old':''}">${esc(m.text)}</div>`).join(''); c.seen = c.msgs.length;
   return `<section style="height:100%;display:flex;flex-direction:column">
-   <div class="top" style="padding-bottom:12px;border-bottom:1px solid var(--line);background:rgba(255,251,242,.9)"><button class="iconbtn" data-a="go" data-v="chats" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button>${ava(f,42)}
-    <div class="grow"><div class="t-name">${esc(f.parent)} · ${esc(f.rel)}</div><div style="font-size:12px;color:var(--green);font-weight:700">${c.typing?'typing…':'✓ Verified · '+esc(f.kids.map(k=>k.n+', '+k.a).join(' · '))}</div></div>
-    <button class="iconbtn" data-a="sheet" data-v="callAsk" aria-label="Request video call">${ic(D.video,'#B32D17',20)}</button><button class="iconbtn" data-a="sheet" data-v="chatmenu" aria-label="More options">${ic(D.more,'#2B1B12',20,'#2B1B12')}</button></div>
-   <div class="scroll" id="msgs" style="display:flex;flex-direction:column;gap:8px;padding-top:14px">
-    <div class="sys">You’ve matched with a family! Keep contact details inside PlayDu.</div>${msgs}${c.typing?'<div class="typing"><i></i><i></i><i></i></div>':''}
-    ${c.msgs.filter(m=>m.me).length<2?`<div class="label" style="margin-top:6px">Safe prompts</div><div class="chips">${SAFE_PROMPTS(kn).map(x=>`<button class="chip" style="font-weight:600;white-space:normal;text-align:left;padding:9px 13px" data-a="say" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
-   </div>
-   <div style="padding:6px 12px 0;display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none"><button class="chip" style="border-style:dashed;border-color:var(--orange);color:var(--red-deep);background:#FFF0E2" data-a="propose" data-v="${f.id}">${ic(D.cal,'currentColor',15)}&nbsp;Propose playdate</button>${STICKERS.map(s=>`<button data-a="stick" data-v="${s}" aria-label="Send sticker" style="border:0;background:var(--paper);border:1px solid var(--line);border-radius:12px;width:40px;height:40px;font-size:20px;flex:none">${s}</button>`).join('')}</div>
-   <form data-form="send" style="display:flex;gap:8px;padding:8px 12px calc(env(safe-area-inset-bottom) + 18px)"><input id="msg" class="input" autocomplete="off" placeholder="Type a message" aria-label="Message"><button class="iconbtn" type="submit" style="background:var(--grad);width:52px;height:52px;border:0" aria-label="Send">${ic(D.send,'#fff',20)}</button></form></section>`;
+   <div class="top" style="padding-bottom:12px;border-bottom:1px solid var(--line);background:rgba(255,251,242,.9)"><button class="iconbtn" data-a="go" data-v="chats" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button>${ava(p,42)}<div class="grow"><div class="t-name">${esc(p.name)}, ${p.age}</div><div style="font-size:12px;color:var(--green);font-weight:700">${c.typing?'typing…':'✓ Verified'}</div></div><button class="iconbtn" data-a="sheet" data-v="chatmenu" aria-label="More options">${ic(D.more,'#2B1B12',20,'#2B1B12')}</button></div>
+   <div class="scroll" id="msgs" style="display:flex;flex-direction:column;gap:8px;padding-top:14px"><div class="sys">${c.kind==='friends'?'You’re now friends':'You matched'} · be kind, be yourself</div>${msgs}${c.typing?'<div class="typing"><i></i><i></i><i></i></div>':''}
+    ${c.locked?`<div class="lock"><div style="font-family:var(--display);font-weight:600;font-size:18px">She makes the first move</div><div class="sub" style="margin:0">${esc(p.name)} has 24 hours to say hello. We’ll let you know.</div></div>`:''}
+    ${!c.locked && !c.msgs.some(m=>m.me) ? `<div class="label" style="margin-top:6px">Icebreakers</div><div class="chips">${ICE.map(x=>`<button class="chip" style="font-weight:600;white-space:normal;text-align:left;padding:9px 13px" data-a="say" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}</div>
+   <form data-form="send" style="display:flex;gap:8px;padding:8px 12px calc(env(safe-area-inset-bottom) + 18px)"><input id="msg" class="input" autocomplete="off" placeholder="${c.locked?'Waiting for '+esc(p.name)+'…':'Type a message'}" aria-label="Message" ${c.locked?'disabled':''}><button class="iconbtn" type="submit" style="background:var(--grad);width:52px;height:52px;border:0" aria-label="Send" ${c.locked?'disabled':''}>${ic(D.send,'#fff',20)}</button></form></section>`;
 }
-
 function profile(){
-  const me = S.me, pct = 40 + (me.verified?30:0) + (me.bio?10:0) + (kid().interests.length?10:0) + (kid().goals.length?10:0), C = 2*Math.PI*44;
-  const boosting = Date.now() < S.boostUntil;
+  const me = S.me, pct = 50 + (me.verified?25:0) + (me.bio?15:0) + (me.interests.length>=3?10:0), C = 2*Math.PI*44;
   return `<section style="height:100%;display:flex;flex-direction:column"><div class="scroll st" style="padding-top:calc(env(safe-area-inset-top) + 52px);display:flex;flex-direction:column;gap:14px">
-   <div style="display:flex;align-items:center;gap:16px"><div style="position:relative;width:100px;height:100px;flex:none"><svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg)"><circle cx="50" cy="50" r="44" fill="none" stroke="#F6DDA4" stroke-width="6"/><circle cx="50" cy="50" r="44" fill="none" stroke="#E5422B" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" style="transition:stroke-dashoffset 1s var(--ease)"/></svg><span style="position:absolute;inset:10px">${ava({pal:ME_PAL},80)}</span><span class="badge b-ink" style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%)">${pct}%</span></div>
-    <div class="grow"><div style="font-family:var(--display);font-weight:600;font-size:26px">${esc(me.name||'Parent')}</div><div class="sub" style="margin:2px 0 6px">${esc(me.rel)} · ${esc(me.country)} · ${esc(me.langs.join(', '))}</div>
-     <div style="display:flex;gap:6px;flex-wrap:wrap">${me.verified?`<span class="badge b-green">${chk()} Verified</span>`:`<button class="badge b-ink" data-a="sheet" data-v="verify" style="border:0">Verify now</button>`}${me.bg?'<span class="badge b-butter">Background checked</span>':''}${me.mentor?'<span class="badge b-lav">Experienced parent</span>':''}<span class="badge b-red">${plan().name}</span></div></div></div>
-   <div style="display:flex;justify-content:space-between;align-items:center"><div class="label">My children</div><button class="small-btn" data-a="addKid" style="background:var(--cream-2);min-height:34px">+ Add child</button></div>
-   <div class="list">${S.kids.map((k,i)=>`<button class="row-item" data-a="editKid" data-v="${i}">${kava(kidName(k),52)}<div class="grow"><div class="t-name">${esc(kidName(k))}, ${k.age} <span class="badge b-butter" style="margin-left:4px">${level(k.age)}</span></div><div class="t-meta">${esc(k.interests.join(', ')||'Add interests')}</div></div><span style="color:var(--muted);font-weight:700;font-size:13px">Edit</span></button>`).join('')}</div>
-   <div class="card" style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="h2" style="font-size:18px">Play Passport</div><div class="t-meta">A stamp for every playdate completed</div></div><span class="badge b-ink">${S.stamps.length} stamp${S.stamps.length===1?'':'s'}</span></div>
-    <div style="display:flex;gap:10px;overflow-x:auto;padding:6px 2px;scrollbar-width:none">${S.stamps.map((s,i)=>`<span class="stamp-b ${S.newStamp===i?'new':''}">${esc(s)}</span>`).join('')}${Array.from({length:Math.max(1,3-S.stamps.length)},()=>`<span class="stamp-b empty">Next playdate</span>`).join('')}</div></div>
-   <div class="card ${boosting?'boosting':''}" style="display:flex;align-items:center;gap:12px"><div class="vico" style="background:var(--grad)">${ic(D.bolt,'#fff')}</div><div class="grow"><div class="t-name">${boosting?'Boost is live':'Boost my family profile'}</div><div class="t-meta" style="white-space:normal">${boosting?'You’re shown first to nearby families for 30 minutes':plan().boosts?`${boostsLeft()} of ${plan().boosts} boosts left this month`:'Included with Premium+ and Gold'}</div></div><button class="small-btn" data-a="boost" style="background:var(--ink);color:var(--cream)" ${boosting?'disabled':''}>${plan().boosts?'Boost':'Unlock'}</button></div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="row-item" data-a="go" data-v="safety" style="flex-direction:column;align-items:flex-start;gap:6px">${ic(D.shield,'#2E7D4F')}<span class="t-name">Safety centre</span><span class="t-meta">Guidelines · report · support</span></button>
-    <button class="row-item" data-a="go" data-v="plus" style="flex-direction:column;align-items:flex-start;gap:6px;background:var(--grad);color:#fff;border:0">${ic(D.star,'#FFD27A',20,'#FFD27A')}<span class="t-name">Membership</span><span style="font-size:13px;opacity:.92">${plan().name} · ${plan().swipes===Infinity?'unlimited swipes':plan().swipes+' swipes a day'}</span></button></div>
-   <div class="label">What other parents can see about my child</div><div class="card" style="padding:4px 16px">${permRows()}</div>
-   <div style="display:flex;gap:10px"><button class="btn ghost" data-a="sheet" data-v="editMe">Edit my profile</button><button class="btn dark" data-a="sheet" data-v="lab">Demo lab</button></div>
-   <p class="sub" style="text-align:center;font-size:12px">PlayDu demo · sample families and places only</p></div></section>`;
+   <div style="display:flex;align-items:center;gap:16px"><div style="position:relative;width:100px;height:100px;flex:none"><svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg)"><circle cx="50" cy="50" r="44" fill="none" stroke="#F6DDA4" stroke-width="6"/><circle cx="50" cy="50" r="44" fill="none" stroke="#E5422B" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" style="transition:stroke-dashoffset 1s var(--ease)"/></svg><span style="position:absolute;inset:10px">${ava(ME,80)}</span><span class="badge b-ink" style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%)">${pct}%</span></div>
+    <div class="grow"><div style="font-family:var(--display);font-weight:600;font-size:26px">${esc(me.name||'You')}, ${me.age}</div><div class="sub" style="margin:2px 0 6px">Looking for: ${esc(me.looking)}</div>
+     <div style="display:flex;gap:6px;flex-wrap:wrap">${me.verified?`<span class="badge b-green">${chk()} Verified</span>`:`<button class="badge b-ink" data-a="sheet" data-v="verify" style="border:0">Verify now</button>`}<span class="badge b-red">${plan().name} · ${plan().swipes} swipes a day</span></div></div></div>
+   <div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="label">About me</div>${me.bio?`<div style="font-size:15.5px;line-height:1.5">“${esc(me.bio)}”</div>`:''}<div class="chips">${me.interests.map(x=>`<span class="badge b-butter">${esc(x)}</span>`).join('')}</div><button class="btn ghost" data-a="sheet" data-v="edit" style="min-height:46px">Edit profile</button></div>
+   <div class="card" style="padding:4px 16px">${[['date','Date mode','Meet people for dating'],['friends','Friends mode','Meet people for friendship']].map(([k,l,h])=>`<div class="setrow"><div class="grow"><div class="t-name">${l}</div><div class="t-meta">${h}</div></div><button class="switch ${me[k]?'on':''}" role="switch" aria-checked="${!!me[k]}" aria-label="${l}" data-a="modeToggle" data-v="${k}"><span></span></button></div>`).join('')}</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="row-item" data-a="go" data-v="safety" style="flex-direction:column;align-items:flex-start;gap:6px">${ic(D.shield,'#2E7D4F')}<span class="t-name">Safety</span><span class="t-meta">Tips · report · block</span></button>
+    <button class="row-item" data-a="go" data-v="plus" style="flex-direction:column;align-items:flex-start;gap:6px;background:var(--grad);color:#fff;border:0">${ic(D.star,'#FFD27A',20,'#FFD27A')}<span class="t-name">Plans</span><span style="font-size:13px;opacity:.92">Get more swipes</span></button></div>
+   <button class="btn dark" data-a="sheet" data-v="lab">Demo lab</button><p class="sub" style="text-align:center;font-size:12px">PlayDu demo · sample people only</p></div></section>`;
 }
 function safety(){
-  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top"><button class="iconbtn" data-a="go" data-v="profile" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button><h1 class="h1 grow" style="font-size:26px">Safety centre</h1></div>
+  return `<section style="height:100%;display:flex;flex-direction:column"><div class="top"><button class="iconbtn" data-a="go" data-v="profile" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button><h1 class="h1 grow" style="font-size:26px">Safety</h1></div>
   <div class="scroll st" style="display:flex;flex-direction:column;gap:12px">
-   <div class="card" style="background:var(--teal-soft);border-color:#B5E0D6"><div class="t-name" style="color:#12695C">How PlayDu protects families</div><ul style="margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.8;color:#12695C"><li>Every parent passes ID, live selfie and child-with-ID checks</li><li>PlayDu only receives pass or fail — documents are never stored</li><li>Chat and video stay inside the app; contact details are hidden</li><li>Child profiles are private by default</li></ul></div>
-   <div class="card"><div class="t-name">Playdate guidelines</div><ul style="margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.8;color:var(--ink-2)"><li>Start with a short video hello</li><li>Always meet in a public place for the first in-person playdate</li><li>Tell a trusted friend or family member your plans</li><li>A parent or guardian stays present for every video call</li></ul></div>
-   <div class="card" style="display:flex;flex-direction:column;gap:10px"><div class="t-name">Report a concern</div><div class="chips">${['Suspicious behaviour','Fake profile','Asked for contact details','Inappropriate message','Something else'].map(r=>`<button class="chip" data-a="toast" data-v="Report received: ${r}. Our safety team reviews every report.">${r}</button>`).join('')}</div></div>
-   <div class="card" style="display:flex;align-items:center;gap:12px"><div class="grow"><div class="t-name">Background check (Platinum)</div><div class="t-meta" style="white-space:normal">${S.me.bg?'Passed. Your badge is visible to other parents.':'Optional extra check by a third-party service. Results stay confidential.'}</div></div>${S.me.bg?`<span class="badge b-green">${chk()} Passed</span>`:`<button class="small-btn" data-a="bg" style="background:var(--ink);color:var(--cream)">${plan().bg?'Start check':'Platinum'}</button>`}</div>
-   <button class="btn ghost" data-a="toast" data-v="Support chat opened (demo). We usually reply within a few hours.">Contact in-app support</button></div></section>`;
+   <div class="card" style="background:var(--teal-soft);border-color:#B5E0D6;color:#12695C"><div class="t-name">Everyone is verified and 18+</div><div style="font-size:14px;line-height:1.6;margin-top:4px">Every member passes an ID and live selfie check before they can like or chat.</div></div>
+   <div class="card"><div class="t-name">Meeting for the first time</div><ul style="margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.8;color:var(--ink-2)"><li>Meet in a busy public place</li><li>Tell a friend where you are going</li><li>Arrange your own transport</li><li>Never send money to someone you have not met</li></ul></div>
+   <div class="card" style="display:flex;flex-direction:column;gap:10px"><div class="t-name">Report a problem</div><div class="chips">${['Fake profile','Harassment','Under 18','Asked for money','Something else'].map(r=>`<button class="chip" data-a="toast" data-v="Report received: ${r}. Our team reviews every report.">${r}</button>`).join('')}</div></div></div></section>`;
 }
 function plus(){
-  const pick = S.planPick || (S.plan==='platinum'?'platinum':ORDER[ORDER.indexOf(S.plan)+1]);
+  const pick = S.planPick || (S.plan==='gold'?'gold':ORDER[ORDER.indexOf(S.plan)+1]);
   return `<section style="height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,#FFE9C9 0%,var(--cream) 40%)"><div class="top"><button class="iconbtn" data-a="back" aria-label="Back">${ic(D.back,'#2B1B12',20)}</button><div class="grow"></div></div>
-  <div class="scroll st" style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:12px;align-items:center">${logo(48)}<h1 class="h1">Member<em>ship</em></h1></div><p class="sub" style="margin:0;font-size:15px">Every plan includes verification and safe chat.</p>
-   ${ORDER.map(k=>`<button class="plan ${pick===k?'on':''}" data-a="pick" data-v="${k}">${S.plan===k?'<span class="badge b-green cur">Current plan</span>':''}<span style="font-family:var(--display);font-weight:600;font-size:21px">${PLANS[k].name}</span><span style="font-weight:700;color:var(--red-deep)">${PLANS[k].price}</span><span style="font-size:13.500px;color:var(--ink-2);line-height:1.7">${PLAN_FEATS[k].map(x=>'✓ '+x).join('<br>')}</span></button>`).join('')}
+  <div class="scroll st" style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:12px;align-items:center">${logo(48)}<h1 class="h1">Pl<em>ans</em></h1></div><p class="sub" style="margin:0;font-size:15px">Every plan has a daily swipe limit, so people swipe with care.</p>
+   ${ORDER.map(k=>`<button class="plan ${pick===k?'on':''}" data-a="pick" data-v="${k}">${S.plan===k?'<span class="badge b-green cur">Current plan</span>':''}<span style="font-family:var(--display);font-weight:600;font-size:21px">${PLANS[k].name}</span><span style="font-weight:700;color:var(--red-deep)">${PLANS[k].price}</span><span style="font-size:13.5px;color:var(--ink-2);line-height:1.7">${FEATS[k].map(x=>'✓ '+x).join('<br>')}</span></button>`).join('')}
    <button class="btn primary" data-a="buy" ${pick===S.plan?'disabled':''}>${pick===S.plan?'This is your current plan':'Switch to '+PLANS[pick].name+' (demo — no payment)'}</button><p class="sub" style="font-size:12px;text-align:center">Prices are placeholders for testing.</p></div></section>`;
 }
 
-/* ================= layer ================= */
+/* ===== sheets + match ===== */
 let lastLayer = '';
 function layerHTML(){
-  let h = ''; const sheet = x => `<div class="overlay" data-a="close"><div class="sheet" data-stop><div class="grab"></div>${x}</div></div>`;
-  const s = S.sheet;
-  if (s==='verify') h = sheet(`<h2 class="h2">Verify to connect</h2><p class="sub" style="margin:0">Matching and chat open once you’re verified. Tap each step (demo).</p>${verifyBlock()}<button class="btn primary" data-a="close" ${S.me.verified?'':'disabled'}>${S.me.verified?'Done':'Complete all three steps'}</button>`);
-  if (s==='filters'){ const t = S.filt, lock = !plan().filters, row = (lab,key,opts) => `<div class="label">${lab}</div><div class="chips">${opts.map(o=>`<button class="chip ${t[key]===o?'on':''}" data-a="filt" data-k="${key}" data-v="${o}">${o}</button>`).join('')}</div>`;
-    h = sheet(`<h2 class="h2">Advanced filters</h2><div class="${lock?'locked':''}" style="display:flex;flex-direction:column;gap:12px;border-radius:20px;padding:${lock?'12px':'0'}">${row('Playdate type','mode',['Any','In person','Virtual'])}${row('Language spoken','lang',['Any'].concat(S.me.langs,['French','German','Italian']).filter((x,i,a)=>a.indexOf(x)===i))}${row('Playdate goal','pref',['Any'].concat(PREFS))}
-      ${lock?`<div class="veil"><span class="badge b-ink">${ic(D.lock,'currentColor',13)} Premium</span><button class="btn primary" data-a="go" data-v="plus" style="width:auto;min-height:44px">Unlock advanced filters</button></div>`:''}</div><p class="sub" style="margin:0">Sorting by best match, age and distance is free for everyone.</p><button class="btn dark" data-a="close">Done</button>`); }
-  if (s==='kidpick') h = sheet(`<h2 class="h2">Find playmates for</h2><div class="list">${S.kids.map((k,i)=>`<button class="row-item" data-a="kidSel" data-v="${i}" style="${S.kidSel===i?'border-color:var(--red)':''}">${kava(kidName(k),44)}<div class="grow"><div class="t-name">${esc(kidName(k))}, ${k.age}</div><div class="t-meta">${esc(k.interests.join(', '))}</div></div></button>`).join('')}</div>`);
-  if (s==='kid') h = sheet(`<h2 class="h2">${S.kids[S.kidEdit].name?'Edit child':'Add a child'}</h2>${kidForm(S.kidEdit)}<div style="display:flex;gap:10px">${S.kids.length>1?`<button class="btn ghost" data-a="delKid">Remove</button>`:''}<button class="btn primary" data-a="saveKid">Save</button></div>`);
-  if (s==='editMe') h = sheet(`<h2 class="h2">Edit my profile</h2><label class="label" for="en">First name</label><input id="en" class="input" data-bind="me.name" value="${esc(S.me.name)}"><label class="label" for="eb">About our family</label><input id="eb" class="input" data-bind="me.bio" maxlength="120" value="${esc(S.me.bio)}" placeholder="What does a good playdate look like for you?">
-    <div class="label">Playdate goals</div><div class="chips">${PREFS.map(x=>`<button class="chip ${S.me.prefs.includes(x)?'on':''}" data-a="metog" data-k="prefs" data-v="${x}">${x}</button>`).join('')}</div><div class="label">Languages</div><div class="chips">${LANGS.map(x=>`<button class="chip ${S.me.langs.includes(x)?'on':''}" data-a="metog" data-k="langs" data-v="${x}">${x}</button>`).join('')}</div><button class="btn primary" data-a="close">Save</button>`);
-  if (s==='chatmenu') h = sheet(`<h2 class="h2">Options</h2><button class="btn ghost" data-a="toast" data-v="Reported. Our safety team reviews every report.">Report this parent</button><button class="btn ghost" data-a="unmatch">Unmatch and block</button><button class="btn dark" data-a="close">Close</button>`);
-  if (s==='callAsk') h = sheet(`<h2 class="h2">Request a video call</h2><p class="sub" style="margin:0">A short “meet and greet” before meeting in person. Both families are notified that a guardian must be present.</p>
-    <label class="card" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer"><input type="checkbox" id="guard" data-a="guard" style="width:22px;height:22px;margin-top:2px;accent-color:#E5422B;flex:none"><span style="font-size:14px;line-height:1.5"><strong>A parent or guardian will be present</strong> for the whole call.</span></label><button class="btn primary" id="callGo" data-a="callStart" disabled>${ic(D.video,'#fff',18)} Request video call</button>`);
-  if (s==='propose' && S.prop){ const p = S.prop, f = fam(p.id), vOnly = f.mode==='Virtual' || f.km==null, virt = p.mode==='Virtual';
-    h = sheet(`<h2 class="h2">Propose a playdate with ${esc(f.parent)}</h2><div class="label">Day</div><div class="chips row">${[1,2,3,4,5,6,7].map(d=>`<button class="chip ${p.day===d?'on':''}" data-a="prop" data-k="day" data-v="${d}">${nice(iso(addDays(d)))}</button>`).join('')}</div>
-     <div class="label">Time</div><div class="chips">${TIMES.map(x=>`<button class="chip ${p.time===x?'on':''}" data-a="prop" data-k="time" data-v="${x}">${x}</button>`).join('')}</div>
-     <div class="label">Type</div><div class="chips">${['In person','Virtual'].map(x=>`<button class="chip ${p.mode===x?'on':''}" data-a="prop" data-k="mode" data-v="${x}" ${x==='In person'&&vOnly?'disabled style="opacity:.4"':''}>${x}</button>`).join('')}</div>
-     <div class="label">${virt?'Where':'Public place (first meeting)'}</div><div class="chips">${(virt?['PlayDu video room']:VENUES).map(x=>`<button class="chip ${p.place===x?'on':''}" data-a="prop" data-k="place" data-v="${x}">${esc(x)}</button>`).join('')}</div>
-     <button class="btn primary" data-a="propSend">Send proposal</button>`); }
-  if (s==='pickFam') h = sheet(`<h2 class="h2">Add a playdate with…</h2><div class="list">${Object.keys(S.chats).map(id=>{const f=fam(id);return `<button class="row-item" data-a="propose" data-v="${id}">${ava(f,48)}<div class="grow"><div class="t-name">${esc(f.parent)}</div><div class="t-meta">${esc(f.kids.map(k=>k.n+', '+k.a).join(' · '))}</div></div></button>`;}).join('')}</div>`);
-  if (s==='newEvent'){ const n = S.newEv || (S.newEv = {title:'',day:3,mode:'In person'});
-    h = sheet(`<h2 class="h2">Create a community event</h2><span class="badge ${S.me.verified?'b-green':'b-ink'}" style="align-self:flex-start">${ic(D.shield,'currentColor',13)} Hosts must be verified</span>
-     <label class="label" for="evt">Event name</label><input id="evt" class="input" data-bind="newEv.title" value="${esc(n.title)}" placeholder="e.g. Story Time Circle">
-     <div class="label">Day</div><div class="chips row">${[2,3,5,7,10,14].map(d=>`<button class="chip ${n.day===d?'on':''}" data-a="nev" data-k="day" data-v="${d}">${nice(iso(addDays(d)))}</button>`).join('')}</div>
-     <div class="label">Type</div><div class="chips">${['In person','Virtual'].map(x=>`<button class="chip ${n.mode===x?'on':''}" data-a="nev" data-k="mode" data-v="${x}">${x}</button>`).join('')}</div><button class="btn primary" data-a="nevSave">Create event</button>`); }
-  if (s==='lab') h = sheet(`<h2 class="h2">Demo lab</h2><p class="sub" style="margin:0">Experiment with how the app behaves.</p><div class="label">Plan</div><div class="chips">${ORDER.map(k=>`<button class="chip ${S.plan===k?'on':''}" data-a="lab-plan" data-v="${k}">${PLANS[k].name}</button>`).join('')}</div>
-    <div class="label">Country</div><div class="chips">${['Bangladesh','United Kingdom'].map(c=>`<button class="chip ${S.me.country===c?'on':''}" data-a="meset" data-k="country" data-v="${c}">${c}</button>`).join('')}</div>
-    <div class="label">Actions</div><div class="chips"><button class="chip" data-a="lab-day">Start a new day</button><button class="chip" data-a="lab-like">A family likes us</button><button class="chip" data-a="lab-ver">${S.me.verified?'Remove verification':'Verify me instantly'}</button></div><button class="btn ghost" data-a="reset">Reset the whole demo</button><button class="btn dark" data-a="close">Done</button>`);
-  if (S.call){ const f = fam(S.call.id), intl = f.country !== S.me.country, mm = pad(Math.floor(S.call.t/60))+':'+pad(S.call.t%60);
-    h += `<div class="call"><div class="big">${art(f)}<div class="live"><span class="badge b-glass" style="color:#C62B1B">● <span id="callT">${mm}</span></span><span class="badge b-glass" style="color:var(--green)">${ic(D.shield,'currentColor',13)} Guardians present</span></div><div class="pip">${art(meFam(),{still:true})}</div>
-      <div class="cprompt" id="cprompt"><div class="label">${intl?'Culture exchange prompt':'Play prompt'}</div><div style="font-family:var(--display);font-size:18px;line-height:1.3;margin-top:4px">${esc(CULTURE[S.call.p % CULTURE.length])}</div></div></div>
-     <div style="text-align:center;padding:12px 0 0;font-weight:700">${esc(f.parent)} &amp; ${esc(f.kids[0].n)} · ${esc(f.city)}</div>
-     <div class="ctrl"><button class="${S.call.mute?'off':''}" data-a="callMute" aria-label="Mute">${ic(D.mic,S.call.mute?'#2B1B12':'#FFF4DC')}</button><button data-a="callNext" aria-label="Next prompt">${ic(D.globe,'#FFD27A')}</button><button class="end" data-a="callEnd" aria-label="End call">${ic(D.phone,'#fff',26)}</button></div></div>`; }
-  if (S.matchPop){ const f = fam(S.matchPop), sc = score(f);
-    h += `<div class="match" role="dialog" aria-label="Match"><div class="glow"></div><div class="rings"><span class="r1">${art(meFam(),{still:true})}</span><span class="r2">${art(f,{still:true})}</span></div>
-     <div class="mt" style="position:relative"><div style="font-family:var(--display);font-size:34px;font-weight:600;line-height:1.1">You’ve matched with a family!</div><p style="margin:12px 0 0;font-size:15.500px;line-height:1.5;color:#FFF0DC">${esc(kidName(kid()))} and ${esc(sc.child.n)} are a ${sc.s}% match${sc.shared.length?' — both love '+esc(sc.shared[0].toLowerCase()):''}.</p></div>
-     <div class="mb" style="display:flex;flex-direction:column;gap:10px;width:100%;position:relative"><button class="btn" style="background:#FFFBF2;color:var(--ink)" data-a="open" data-v="${f.id}">Say hello to ${esc(f.parent)}</button><button class="btn" style="background:transparent;color:#fff;border:1.500px solid rgba(255,251,242,.7)" data-a="closeMatch">Keep looking</button></div></div>`; }
+  let h = ''; const sheet = x => `<div class="overlay" data-a="close"><div class="sheet" data-stop><div class="grab"></div>${x}</div></div>`, s = S.sheet, f = S.filt;
+  if (s==='verify') h = sheet(`<h2 class="h2">Verify to like and match</h2><p class="sub" style="margin:0">Tap each step (demo).</p>${verifyBlock()}<button class="btn primary" data-a="close" ${S.me.verified?'':'disabled'}>${S.me.verified?'Done':'Complete both steps'}</button>`);
+  if (s==='filters') h = sheet(`<h2 class="h2">Filters</h2><label class="label" for="f1">Age · <span id="fmin">${f.min}</span> to <span id="fmax">${f.max}</span></label><input id="f1" type="range" min="18" max="60" value="${f.min}" data-filter="min" style="accent-color:#E5422B" aria-label="Minimum age"><input type="range" min="18" max="60" value="${f.max}" data-filter="max" style="accent-color:#E5422B" aria-label="Maximum age">
+    <label class="label" for="f3">Distance · within <span id="fkm">${f.km}</span> km</label><input id="f3" type="range" min="1" max="20" value="${f.km}" data-filter="km" style="accent-color:#E5422B">
+    <div class="label">Show me (Date mode)</div><div class="chips">${[['women','Women'],['men','Men'],['everyone','Everyone']].map(([v,l])=>`<button class="chip ${S.me.show===v?'on':''}" data-a="meset" data-k="show" data-v="${v}">${l}</button>`).join('')}</div><button class="btn primary" data-a="close">Done</button>`);
+  if (s==='edit') h = sheet(`<h2 class="h2">Edit profile</h2><label class="label" for="en">First name</label><input id="en" class="input" data-bind="me.name" value="${esc(S.me.name)}"><label class="label" for="eb">About me</label><input id="eb" class="input" data-bind="me.bio" maxlength="100" value="${esc(S.me.bio)}" placeholder="One line about you">
+    <div class="label">Looking for</div><div class="chips">${LOOKING.map(x=>`<button class="chip ${S.me.looking===x?'on':''}" data-a="meset" data-k="looking" data-v="${x}">${x}</button>`).join('')}</div><div class="label">Interests</div><div class="chips">${INTERESTS.map(x=>`<button class="chip ${S.me.interests.includes(x)?'on':''}" data-a="int" data-v="${x}">${x}</button>`).join('')}</div><button class="btn primary" data-a="close">Save</button>`);
+  if (s==='chatmenu') h = sheet(`<h2 class="h2">Options</h2><button class="btn ghost" data-a="toast" data-v="Reported. Our team reviews every report.">Report</button><button class="btn ghost" data-a="unmatch">Unmatch and block</button><button class="btn dark" data-a="close">Close</button>`);
+  if (s==='likes'){ const L = likers(); h = sheet(`<h2 class="h2">Likes you</h2>${L.length?`<div class="list">${L.map(p=>`<div class="row-item">${ava(p,52)}<div class="grow"><div class="t-name">${esc(p.name)}, ${p.age}</div><div class="t-meta">${esc(p.job)} · ${esc(p.area)}</div></div><button class="small-btn" style="background:var(--grad);color:#fff" data-a="matchNow" data-v="${p.id}">Like back</button></div>`).join('')}</div><p class="sub" style="margin:0">Liking back uses one swipe · ${left()} of ${plan().swipes} left today.</p>`:'<p class="sub">No new likes right now.</p>'}<button class="btn dark" data-a="close">Close</button>`); }
+  if (s==='lab') h = sheet(`<h2 class="h2">Demo lab</h2><div class="label">Plan</div><div class="chips">${ORDER.map(k=>`<button class="chip ${S.plan===k?'on':''}" data-a="lab-plan" data-v="${k}">${PLANS[k].name} · ${PLANS[k].swipes}</button>`).join('')}</div>
+    <div class="label">I am a</div><div class="chips">${[['woman','Woman'],['man','Man']].map(([v,l])=>`<button class="chip ${S.me.gender===v?'on':''}" data-a="meset" data-k="gender" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="label">Actions</div><div class="chips"><button class="chip" data-a="lab-day">Start a new day</button><button class="chip" data-a="lab-like">Someone likes me</button><button class="chip" data-a="lab-ver">${S.me.verified?'Remove verification':'Verify me instantly'}</button></div><button class="btn ghost" data-a="reset">Reset the whole demo</button><button class="btn dark" data-a="close">Done</button>`);
+  if (S.matchPop){ const p = person(S.matchPop), c = S.chats[p.id], sh = shared(p);
+    h += `<div class="match" role="dialog" aria-label="Match"><div class="glow"></div><div class="rings"><span class="r1">${art(ME,{still:true})}</span><span class="r2">${art(p,{still:true})}</span></div>
+     <div class="mt" style="position:relative"><div style="font-family:var(--display);font-size:42px;font-weight:600;line-height:1.05">${c.kind==='friends'?'New friend!':'It’s a match!'}</div><p style="margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#FFF0DC">You and ${esc(p.name)} liked each other${sh.length?' — you both enjoy '+esc(sh[0].toLowerCase()):''}.<br>${c.locked?'She makes the first move within 24 hours.':'Say hello within 24 hours.'}</p></div>
+     <div class="mb" style="display:flex;flex-direction:column;gap:10px;width:100%;position:relative"><button class="btn" style="background:#FFFBF2;color:var(--ink)" data-a="open" data-v="${p.id}">${c.locked?'Go to chat':'Say hello'}</button><button class="btn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,251,242,.7)" data-a="closeMatch">Keep swiping</button></div></div>`; }
   return h;
 }
-function renderLayer(){
-  const key = (S.sheet||'')+'|'+(S.matchPop||'')+'|'+(S.call?'c':''), layer = $('#layer'), changed = key !== lastLayer; lastLayer = key;
-  const sc = layer.querySelector('.sheet'), top = sc ? sc.scrollTop : 0;
-  layer.innerHTML = layerHTML();
-  if (changed) layer.querySelectorAll('.overlay,.match,.call').forEach(e => e.classList.add('anim'));
-  else { const n = layer.querySelector('.sheet'); if (n) n.scrollTop = top; }
-}
+function renderLayer(){ const k = (S.sheet||'')+'|'+(S.matchPop||''), layer = $('#layer'), changed = k !== lastLayer; lastLayer = k; const sc = layer.querySelector('.sheet'), top = sc?sc.scrollTop:0;
+  layer.innerHTML = layerHTML(); if (changed) layer.querySelectorAll('.overlay,.match').forEach(e=>e.classList.add('anim')); else { const n = layer.querySelector('.sheet'); if (n) n.scrollTop = top; } }
 
-/* ================= render ================= */
-let lastScreen = null, popId = null;
-const NO_NAV = ['welcome','onboarding','chat','safety','plus'], TABS = ['discover','playdates','community','chats','profile'];
+/* ===== render ===== */
+let lastScreen = null;
+const NO_NAV = ['welcome','onboarding','chat','safety','plus'], TABS = ['discover','chats','profile'];
 function renderNav(){
-  const nav = $('#nav'), cur = S.screen, idx = Math.max(0, TABS.indexOf(cur)), unread = Object.values(S.chats).some(c => c.unread);
-  nav.classList.toggle('hide', NO_NAV.includes(cur));
-  const items = [['Discover',D.home],['Playdates',D.cal],['Community',D.people],['Chats',D.chat],['Me',D.user]];
+  const nav = $('#nav'), cur = S.screen, idx = Math.max(0, TABS.indexOf(cur)), unread = Object.values(S.chats).some(c=>c.unread);
+  nav.classList.toggle('hide', NO_NAV.includes(cur)); const items = [['Discover',D.heart],['Chats',D.chat],['Me',D.user]];
   if (!nav.querySelector('.pill')) nav.innerHTML = '<span class="pill"></span>' + TABS.map(id=>`<button data-a="go" data-v="${id}"></button>`).join('');
   nav.querySelector('.pill').style.transform = `translateX(${idx*100}%)`;
-  nav.querySelectorAll('button').forEach((b,i)=>{ const on = i===idx && TABS.includes(cur); b.className = on?'on':''; b.setAttribute('aria-current', on?'page':'false'); b.innerHTML = ic(items[i][1], on?'#E5422B':'#76604F', 24, on&&i===0?'#E5422B':'none') + items[i][0] + (i===3&&unread?'<span class="dot"></span>':''); });
+  nav.querySelectorAll('button').forEach((b,i)=>{ const on = i===idx && TABS.includes(cur); b.className = on?'on':''; b.setAttribute('aria-current',on?'page':'false'); b.innerHTML = ic(items[i][1], on?'#E5422B':'#76604F', 24, on&&i===0?'#E5422B':'none') + items[i][0] + (i===1&&unread?'<span class="dot"></span>':''); });
 }
 function renderView(){
-  const map = {welcome,onboarding,discover,playdates,community,chats,chat,profile,safety,plus}, v = $('#view'), changed = S.screen !== lastScreen;
-  const sc = v.querySelector('.scroll'), top = sc && !changed ? sc.scrollTop : 0;
-  v.className = (NO_NAV.includes(S.screen)?'full ':'') + (changed?'enter':'');
-  v.innerHTML = (map[S.screen]||discover)(); lastScreen = S.screen;
-  const ns = v.querySelector('.scroll'); if (ns && top) ns.scrollTop = top;
-  const box = $('#msgs'); if (box) box.scrollTop = box.scrollHeight;
-  requestAnimationFrame(()=>v.querySelectorAll('circle.v').forEach(c => { c.style.strokeDashoffset = c.dataset.to; }));
-  bindCard(); tick();
+  const map = {welcome,onboarding,discover,chats,chat,profile,safety,plus}, v = $('#view'), changed = S.screen !== lastScreen, sc = v.querySelector('.scroll'), top = sc && !changed ? sc.scrollTop : 0;
+  v.className = (NO_NAV.includes(S.screen)?'full ':'') + (changed?'enter':''); v.innerHTML = (map[S.screen]||discover)(); lastScreen = S.screen;
+  const ns = v.querySelector('.scroll'); if (ns && top) ns.scrollTop = top; const box = $('#msgs'); if (box) box.scrollTop = box.scrollHeight; bindCard(); tick();
 }
-function render(){ roll(); renderView(); renderNav(); renderLayer(); save(); popId = null; }
-let toastT;
-function toast(msg){ const el = $('#toast'); el.innerHTML = `<div>${esc(msg)}</div>`; clearTimeout(toastT); toastT = setTimeout(()=>{ el.innerHTML=''; }, 2800); }
-function burst(x, y){
-  const fx = $('#fx'), r = $('#app').getBoundingClientRect();
-  for (let i=0;i<16;i++){ const s = document.createElement('div'); s.className='heart-p'; const a = Math.random()*Math.PI*2, d = 60+Math.random()*120;
-    s.style.left=(x-r.left)+'px'; s.style.top=(y-r.top)+'px'; s.style.setProperty('--x',Math.cos(a)*d+'px'); s.style.setProperty('--y',(Math.sin(a)*d-60)+'px'); s.style.setProperty('--r',(Math.random()*80-40)+'deg'); s.style.animationDelay=(Math.random()*.12)+'s';
-    s.innerHTML = ic(D.home, i%3?'#E5422B':'#F47B2A', 22, i%3?'#E5422B':'#FFD27A'); fx.appendChild(s); setTimeout(()=>s.remove(),1200); }
-}
-function tick(){
-  const el = $('#cd'); if (el){ const n = new Date(), mid = new Date(n); mid.setHours(24,0,0,0); const ms = mid-n, s = Math.floor(ms/1000);
-    el.textContent = [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(pad).join(':'); const r = $('#cdRing'); if (r) r.style.strokeDashoffset = 553*(ms/86400000); }
-  if (S.call){ const c = $('#callT'); if (c) c.textContent = pad(Math.floor(S.call.t/60))+':'+pad(S.call.t%60); }
-}
-setInterval(()=>{ if (S.call) S.call.t++; tick(); }, 1000);
+function render(){ roll(); renderView(); renderNav(); renderLayer(); save(); }
+let toastT; function toast(m){ const el = $('#toast'); el.innerHTML = `<div>${esc(m)}</div>`; clearTimeout(toastT); toastT = setTimeout(()=>{ el.innerHTML=''; }, 2800); }
+function burst(x, y){ const fx = $('#fx'), r = $('#app').getBoundingClientRect();
+  for (let i=0;i<16;i++){ const s = document.createElement('div'); s.className='heart-p'; const a = Math.random()*Math.PI*2, d = 60+Math.random()*120; s.style.left=(x-r.left)+'px'; s.style.top=(y-r.top)+'px'; s.style.setProperty('--x',Math.cos(a)*d+'px'); s.style.setProperty('--y',(Math.sin(a)*d-60)+'px'); s.style.setProperty('--r',(Math.random()*80-40)+'deg'); s.style.animationDelay=(Math.random()*.12)+'s'; s.innerHTML = ic(D.heart, i%3?'#E5422B':'#F47B2A', 22, i%3?'#E5422B':'#FFD27A'); fx.appendChild(s); setTimeout(()=>s.remove(),1200); } }
+function tick(){ const el = $('#cd'); if (!el) return; const n = new Date(), mid = new Date(n); mid.setHours(24,0,0,0); const ms = mid-n, s = Math.floor(ms/1000); el.textContent = [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(pad).join(':'); const r = $('#cdRing'); if (r) r.style.strokeDashoffset = 553*(ms/86400000); }
+setInterval(tick, 1000);
 
-/* ================= logic ================= */
-function refresh(){ if (S.screen==='chat'||S.screen==='chats'||S.screen==='playdates') renderView(); renderNav(); save(); }
-function ensureChat(id){ if (!S.chats[id]){ S.chats[id] = {msgs:[],unread:false,typing:false,seen:0}; S.matches.unshift(id); } return S.chats[id]; }
-function theyReply(id, text, delay){
-  const c = S.chats[id]; if (!c) return; c.typing = true; refresh();
-  setTimeout(()=>{ const c2 = S.chats[id]; if (!c2) return; c2.typing=false; c2.msgs.push({me:false,text: text || REPLIES[c2.msgs.length % REPLIES.length]}); c2.unread = !(S.screen==='chat'&&S.openChat===id); refresh(); }, delay||1700);
+/* ===== logic ===== */
+function refresh(){ if (S.screen==='chat'||S.screen==='chats') renderView(); renderNav(); save(); }
+function theyReply(id, text, delay){ const c = S.chats[id]; if (!c) return; c.typing = true; refresh();
+  setTimeout(()=>{ const c2 = S.chats[id]; if (!c2) return; c2.typing=false; c2.locked=false; c2.msgs.push({me:false,text:text||REPLIES[c2.msgs.length % REPLIES.length]}); c2.unread = !(S.screen==='chat'&&S.openChat===id); refresh(); }, delay||1700); }
+function makeMatch(p){
+  const kind = S.mode==='friends'?'friends':'date', locked = kind==='date' && S.me.gender==='man' && p.g==='woman';
+  S.chats[p.id] = {kind,msgs:[],unread:false,typing:false,locked,seen:0,at:Date.now()}; S.matchPop = p.id; vibrate([40,60,40]);
+  if (locked) setTimeout(()=>{ if (S.chats[p.id] && !S.chats[p.id].msgs.length){ theyReply(p.id, `Hi ${S.me.name||'there'}! Your profile made me smile. How is your week going?`, 1500); setTimeout(()=>toast(`${p.name} said hello`), 1600); } }, 3000);
 }
-function doSwipe(dir){
-  const f = deck()[0]; if (!f) return;
-  if (dir==='like' && !S.me.verified){ S.sheet='verify'; render(); return; }
-  if (left() <= 0){ render(); return; }
-  if (plan().swipes !== Infinity) S.used++;
-  S.seen[f.id] = dir; S.page = 0;
-  if (dir==='like' && likesMe(f)){ ensureChat(f.id); S.matchPop = f.id; vibrate([40,60,40]);
-    setTimeout(()=>{ const c = S.chats[f.id]; if (c && !c.msgs.length) theyReply(f.id, `Hi ${S.me.name||'there'}! ${f.kids[0].n} would love to meet ${kidName(kid())}.`, 1500); }, 3500); }
-  render();
-}
+function useSwipe(p, dir){ S.used++; S.seen[key(p.id)] = dir; S.page = 0; S.lastPass = dir==='pass' ? key(p.id) : null; if (dir==='like' && likesMe(p) && !S.chats[p.id]) makeMatch(p); }
+function doSwipe(dir){ const p = deck()[0]; if (!p || left()<=0){ render(); return; } useSwipe(p, dir); render(); }
 function fly(dir){
-  const card = $('#top-card'); if (!card){ return; }
+  const card = $('#top-card'); if (!card || left()<=0) return;
   if (dir==='like' && !S.me.verified){ S.sheet='verify'; render(); return; }
-  const out = dir==='pass' ? -1 : 1;
-  card.style.transition='transform .45s cubic-bezier(.2,.8,.2,1)'; card.style.transform=`translate(${out*520}px,40px) rotate(${out*28}deg)`;
+  const out = dir==='pass'?-1:1; card.style.transition='transform .45s cubic-bezier(.2,.8,.2,1)'; card.style.transform=`translate(${out*520}px,40px) rotate(${out*28}deg)`;
   const st = card.querySelector(dir==='pass'?'.stamp.nope':'.stamp.like'); if (st) st.style.opacity = 1;
   const nx = $('#next-card'); if (nx){ nx.style.transition='transform .4s var(--ease), filter .4s'; nx.style.transform='none'; nx.style.filter='none'; }
   if (dir==='like'){ const b = card.getBoundingClientRect(); burst(b.left+b.width/2, b.top+b.height/2); vibrate(15); }
   setTimeout(()=>doSwipe(dir), 300);
 }
 function bindCard(){
-  const card = $('#top-card'); if (!card) return; let sx=0, dx=0, dy=0, sy=0, down=false, moved=false;
-  const like = card.querySelector('.stamp.like'), nope = card.querySelector('.stamp.nope'), nx = $('#next-card');
+  const card = $('#top-card'); if (!card) return; let sx=0, sy=0, dx=0, dy=0, down=false, moved=false; const like = card.querySelector('.stamp.like'), nope = card.querySelector('.stamp.nope'), nx = $('#next-card');
   card.addEventListener('pointerdown', e => { down=true; moved=false; sx=e.clientX; sy=e.clientY; dx=dy=0; card.style.transition='none'; try{card.setPointerCapture(e.pointerId);}catch(x){} });
-  card.addEventListener('pointermove', e => { if(!down) return; dx=e.clientX-sx; dy=e.clientY-sy; if (Math.abs(dx)>6||Math.abs(dy)>6) moved=true; if(!moved) return;
-    card.style.transform=`translate(${dx}px,${dy*.25}px) rotate(${dx/16}deg)`; like.style.opacity=Math.max(0,Math.min(1,dx/100)); nope.style.opacity=Math.max(0,Math.min(1,-dx/100));
-    if (nx) nx.style.transform=`scale(${.94+Math.min(Math.abs(dx)/1800,.06)}) translateY(${16-Math.min(Math.abs(dx)/12,16)}px)`; });
-  const end = e => { if(!down) return; down=false;
-    if (!moved){ const r = card.getBoundingClientRect(); S.page = (S.page + (e.clientX-r.left < r.width*.4 ? 2 : 1)) % 3; renderView(); return; }
-    if (Math.abs(dx) > 110){ fly(dx>0?'like':'pass'); return; }
-    card.style.transition='transform .4s cubic-bezier(.2,1.400,.4,1)'; card.style.transform=''; like.style.opacity=0; nope.style.opacity=0; if (nx) nx.style.transform=''; };
+  card.addEventListener('pointermove', e => { if(!down) return; dx=e.clientX-sx; dy=e.clientY-sy; if (Math.abs(dx)>6||Math.abs(dy)>6) moved=true; if(!moved) return; card.style.transform=`translate(${dx}px,${dy*.25}px) rotate(${dx/16}deg)`; like.style.opacity=Math.max(0,Math.min(1,dx/100)); nope.style.opacity=Math.max(0,Math.min(1,-dx/100)); if (nx) nx.style.transform=`scale(${.94+Math.min(Math.abs(dx)/1800,.06)}) translateY(${16-Math.min(Math.abs(dx)/12,16)}px)`; });
+  const end = e => { if(!down) return; down=false; if (!moved){ const r = card.getBoundingClientRect(); S.page = (S.page + (e.clientX-r.left < r.width*.4 ? 2 : 1)) % 3; renderView(); return; }
+    if (Math.abs(dx) > 110){ fly(dx>0?'like':'pass'); return; } card.style.transition='transform .4s cubic-bezier(.2,1.4,.4,1)'; card.style.transform=''; like.style.opacity=0; nope.style.opacity=0; if (nx) nx.style.transform=''; };
   card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
 }
-const CONTACT = /(\+?\d[\d\s().-]{7,}\d)|(\S+@\S+\.\S+)/;
-function sendMsg(text, type){
-  text = (text||'').trim(); const c = S.chats[S.openChat]; if (!text || !c) return;
-  if (!type && CONTACT.test(text)){ toast('For safety, phone numbers and emails can’t be shared in chat.'); return; }
-  c.msgs.push({me:true,text,type}); renderView(); theyReply(S.openChat, type==='stick' ? null : null);
-  const i = $('#msg'); if (i) i.focus();
-}
-function runVerify(k){
-  S.ver.busy = k; render();
-  setTimeout(()=>{ S.ver[k] = true; S.ver.busy = null; vibrate(20);
-    if (allVer()){ S.ver.review = true; render(); setTimeout(()=>{ S.ver.review=false; S.me.verified=true; vibrate([30,40,30]); render(); toast('You’re verified. Welcome to the PlayDu community.'); }, 1800); }
-    else render(); }, 1300);
-}
-function stampFor(e){ const f = fam(e.fid); if (!f) return 'New friend'; if (f.country !== S.me.country) return f.country+' culture swap'; const sh = score(f).shared[0]; return sh ? sh+' explorer' : 'New friend'; }
-const setPath = (path, val) => { const [a,b] = path.split('.'); if (a==='kid') return; (a==='newEv' ? (S.newEv||(S.newEv={})) : S[a])[b] = val; };
+function sendMsg(text){ text = (text||'').trim(); const c = S.chats[S.openChat]; if (!text || !c || c.locked) return; c.msgs.push({me:true,text}); renderView(); theyReply(S.openChat); const i = $('#msg'); if (i) i.focus(); }
+function runVerify(k){ S.ver.busy = k; render(); setTimeout(()=>{ S.ver[k]=true; S.ver.busy=null; vibrate(20);
+  if (S.ver.id && S.ver.selfie){ S.ver.review=true; render(); setTimeout(()=>{ S.ver.review=false; S.me.verified=true; vibrate([30,40,30]); render(); toast('You’re verified. Welcome to PlayDu.'); }, 1600); } else render(); }, 1300); }
 
-/* ================= events ================= */
+/* ===== events ===== */
 let prevScreen = 'discover';
+const planMsg = k => `${PLANS[k].name}: ${left()} of ${PLANS[k].swipes} swipes left today`;
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-a]'); if (!el) return;
-  if (el.classList.contains('overlay') && e.target.closest('[data-stop]')) return;
-  const a = el.dataset.a, v = el.dataset.v, i = Number(el.dataset.i||0);
+  const el = e.target.closest('[data-a]'); if (!el) return; if (el.classList.contains('overlay') && e.target.closest('[data-stop]')) return;
+  const a = el.dataset.a, v = el.dataset.v;
   switch(a){
     case 'start': S.screen='onboarding'; S.step=0; break;
-    case 'skip': if (!S.me.name){ S.me.name='Sara'; S.kids[0] = {name:'Zara',age:6,gender:'Girl',interests:['Art','Lego','Science','Animals'],goals:['Social skills']}; } S.onboarded=true; S.screen='discover'; render(); toast('Exploring as a guest. You can browse, but you’ll need to verify to connect.'); return;
+    case 'skip': if (!S.me.name){ S.me.name='Rahim'; S.me.interests=['Coffee','Travel','Cricket','Books']; } S.onboarded=true; S.screen='discover'; render(); toast('Browsing as a guest. Verify to like and match.'); return;
     case 'obBack': if (S.step===0) S.screen='welcome'; else S.step--; break;
-    case 'obNext': if (S.step<4) S.step++; else { S.onboarded=true; S.screen='discover'; render(); toast(`Welcome, ${S.me.name}! Here are families for ${kidName(kid())}.`); return; } break;
-    case 'pledge': S.acct.pledge = el.checked; break;
-    case 'meset': S.me[el.dataset.k] = v; if (el.dataset.k==='country'){ lastCard=''; } break;
-    case 'metog': { const arr = S.me[el.dataset.k], at = arr.indexOf(v); if (at>=0){ if (arr.length>1) arr.splice(at,1); } else arr.push(v); break; }
+    case 'obNext': if (S.step<3) S.step++; else { S.onboarded=true; S.screen='discover'; render(); toast(`Welcome, ${S.me.name}! You have ${left()} swipes today.`); return; } break;
+    case 'adult': S.acct.adult = el.checked; break;
+    case 'age': S.me.age = Math.max(18, Math.min(99, S.me.age + Number(v))); break;
+    case 'meset': S.me[el.dataset.k] = v; lastCard=''; break;
+    case 'int': { const arr = S.me.interests, at = arr.indexOf(v); if (at>=0) arr.splice(at,1); else if (arr.length<6) arr.push(v); else { toast('Pick up to 6'); return; } break; }
     case 'verify': runVerify(v); return;
-    case 'age': S.kids[i].age = Math.max(0, Math.min(17, S.kids[i].age + Number(v))); break;
-    case 'kset': S.kids[i][el.dataset.k] = v; break;
-    case 'ktog': { const arr = S.kids[i][el.dataset.k], at = arr.indexOf(v); if (at>=0) arr.splice(at,1); else if (el.dataset.k!=='interests' || arr.length<5) arr.push(v); else { toast('Pick up to 5 interests'); return; } break; }
-    case 'perm': S.perms[v] = !S.perms[v]; break;
     case 'go': if (TABS.includes(S.screen)) prevScreen = S.screen; S.screen=v; S.sheet=null; if (v!=='chat') S.openChat=null; if (v==='plus') S.planPick=null; break;
     case 'back': S.screen = prevScreen || 'profile'; break;
-    case 'scope': if (v==='International' && !plan().intl){ prevScreen='discover'; S.screen='plus'; S.planPick='plus'; render(); toast('International matching is part of Premium+'); return; } S.scope=v; S.page=0; lastCard=''; break;
-    case 'sort': S.sort=v; S.page=0; lastCard=''; break;
-    case 'page': S.page=(S.page+1)%3; renderView(); return;
-    case 'swipe': if (left()<=0){ render(); return; } fly(v); return;
-    case 'repass': Object.keys(S.seen).forEach(k => { if (S.seen[k]==='pass') delete S.seen[k]; }); lastCard=''; break;
-    case 'filt': S.filt[el.dataset.k] = v; lastCard=''; break;
-    case 'kidSel': S.kidSel = Number(v); S.sheet=null; lastCard=''; break;
-    case 'addKid': S.kids.push({name:'',age:5,gender:'Girl',interests:[],goals:[]}); S.kidEdit = S.kids.length-1; S.sheet='kid'; break;
-    case 'editKid': S.kidEdit = Number(v); S.sheet='kid'; break;
-    case 'saveKid': { const k = S.kids[S.kidEdit]; if (!k.name.trim()){ toast('Add your child’s first name'); return; } S.sheet=null; lastCard=''; break; }
-    case 'delKid': S.kids.splice(S.kidEdit,1); S.kidSel=0; S.sheet=null; lastCard=''; break;
-    case 'calM': S.calM += Number(v); break;
-    case 'calSel': S.calSel = v; break;
-    case 'join': { const ev = S.events.find(x=>x.id===v); if (!S.me.verified){ S.sheet='verify'; break; } ev.joined = !ev.joined; if (ev.joined){ S.calSel = ev.date; toast('Joined. It’s on your calendar.'); } break; }
-    case 'addPd': if (!Object.keys(S.chats).length){ toast('Match with a family first, then plan a playdate.'); return; } S.sheet='pickFam'; break;
-    case 'propose': { const f = fam(v), virt = f.mode==='Virtual' || f.km==null; S.prop = {id:v,day:2,time:'4:30 pm',mode:virt?'Virtual':'In person',place:virt?'PlayDu video room':VENUES[0]}; S.sheet='propose'; break; }
-    case 'prop': S.prop[el.dataset.k] = el.dataset.k==='day' ? Number(v) : v; if (el.dataset.k==='mode') S.prop.place = v==='Virtual' ? 'PlayDu video room' : VENUES[0]; break;
-    case 'propSend': { const p = S.prop, f = fam(p.id), id = 'p'+Date.now(), sk = score(f);
-      S.events.push({id,kind:'playdate',fid:p.id,title:`${kidName(kid())} + ${sk.child.n}`,with:f.parent,date:iso(addDays(p.day)),time:p.time,mode:p.mode,place:p.place,status:'pending'});
-      const c = ensureChat(p.id); c.msgs.push({me:true,type:'pd',ev:id}); S.sheet=null; S.prop=null; S.openChat=p.id; S.screen='chat'; render(); toast('Proposal sent');
-      setTimeout(()=>{ const ev = S.events.find(x=>x.id===id); if (!ev || !S.chats[f.id]) return; ev.status='confirmed'; S.chats[f.id].msgs.push({me:false,text:'That works for us. See you then!'}); S.chats[f.id].unread = !(S.screen==='chat'&&S.openChat===f.id); vibrate(30); toast(`${f.parent} accepted. It’s on your calendar.`); refresh(); }, 2800);
-      return; }
-    case 'done': { const ev = S.events.find(x=>x.id===v); ev.status='done'; S.stamps.push(stampFor(ev)); S.newStamp = S.stamps.length-1; S.screen='profile'; render(); vibrate([30,40,30]); toast('Playdate complete — new stamp in your Play Passport'); setTimeout(()=>{ const s = document.querySelector('.stamp-b.new'); if (s) s.scrollIntoView({behavior:'smooth',block:'center'}); }, 250); return; }
-    case 'nev': S.newEv[el.dataset.k] = el.dataset.k==='day' ? Number(v) : v; break;
-    case 'nevSave': { if (!S.me.verified){ S.sheet='verify'; render(); toast('Hosts must be verified'); return; } const n = S.newEv; if (!n.title || !n.title.trim()){ toast('Give your event a name'); return; }
-      const d = iso(addDays(n.day)); S.events.push({id:'c'+Date.now(),kind:'community',title:n.title.trim(),date:d,time:'4:00 pm',mode:n.mode,place:n.mode==='Virtual'?'PlayDu video room':'[Public park]',ages:'All ages',joined:true,host:true}); S.calSel=d; S.calM=0; S.newEv=null; S.sheet=null; render(); toast('Event created and shared with verified families'); return; }
-    case 'comTab': S.comTab=v; break;
-    case 'board': S.board=v; break;
-    case 'helpful': S.helpful[v]=!S.helpful[v]; popId=Number(v); break;
-    case 'post': { const tx = (($('#composer')||{}).value||'').trim(); if (!tx){ toast('Write your question first'); return; } S.threads.unshift({id:Date.now(),board:S.board==='All'?'Toddler sleep':S.board,who:S.me.name||'You',mentor:S.me.mentor,t:tx,r:0,time:'now'}); S.draft=''; toast('Posted to the community'); break; }
-    case 'remind': S.remind[v]=!S.remind[v]; break;
-    case 'saveIdea': S.saved[v]=!S.saved[v]; break;
-    case 'mentor': S.me.mentor=!S.me.mentor; break;
+    case 'mode': S.mode=v; S.page=0; lastCard=''; break;
+    case 'modeToggle': S.me[v]=!S.me[v]; if (!S.me.date && !S.me.friends){ S.me[v]=true; toast('Keep at least one mode on'); return; } break;
+    case 'swipe': fly(v); return;
+    case 'rewind': if (!plan().rewind){ prevScreen='discover'; S.screen='plus'; S.planPick='gold'; render(); toast('Rewind is part of Gold'); return; }
+      if (!S.lastPass){ toast('Nothing to rewind'); return; } delete S.seen[S.lastPass]; S.lastPass=null; S.used=Math.max(0,S.used-1); lastCard=''; render(); toast('Brought back your last pass'); return;
+    case 'repass': Object.keys(S.seen).forEach(k => { if (S.seen[k]==='pass' && k.startsWith(S.mode+':')) delete S.seen[k]; }); lastCard=''; break;
+    case 'likes': if (!plan().likes){ prevScreen='chats'; S.screen='plus'; S.planPick='premium'; render(); toast('See who likes you with Premium'); return; } S.sheet='likes'; break;
+    case 'matchNow': { const p = person(v); if (left()<=0){ S.sheet=null; render(); toast(`No swipes left today on ${plan().name}`); return; } if (!S.me.verified){ S.sheet='verify'; break; } S.sheet=null; useSwipe(p,'like'); break; }
     case 'open': S.openChat=v; S.screen='chat'; S.matchPop=null; S.sheet=null; if (S.chats[v]){ S.chats[v].unread=false; S.chats[v].seen=0; } break;
     case 'closeMatch': S.matchPop=null; break;
     case 'say': sendMsg(v); return;
-    case 'stick': sendMsg(v,'stick'); return;
-    case 'guard': { const b = $('#callGo'); if (b) b.disabled = !el.checked; return; }
-    case 'callStart': S.sheet=null; render(); toast('Requesting video call… both families are notified a guardian must be present'); { const id = S.openChat; setTimeout(()=>{ if (S.openChat!==id) return; S.call={id,t:0,p:0,mute:false}; vibrate(30); render(); }, 1800); } return;
-    case 'callFrom': ensureChat(v); S.openChat=v; S.screen='chat'; S.call={id:v,t:0,p:0,mute:false}; break;
-    case 'callMute': S.call.mute=!S.call.mute; break;
-    case 'callNext': S.call.p++; break;
-    case 'callEnd': { const c = S.chats[S.call.id], mins = Math.max(1, Math.round(S.call.t/60)); if (c) c.msgs.push({type:'call',text:`Video call · ${mins} min · guardians present`}); S.call=null; break; }
-    case 'boost': if (!plan().boosts){ prevScreen='profile'; S.screen='plus'; S.planPick='plus'; render(); toast('Boosts come with Premium+ and Gold'); return; }
-      if (boostsLeft()<=0){ toast('No boosts left this month'); return; } S.boostsUsed++; S.boostUntil = Date.now()+30*60000; render(); toast(`Boost started · ${boostsLeft()} of ${plan().boosts} left this month`);
-      setTimeout(()=>{ const f = pool().find(x => !S.seen[x.id] && !likesMe(x)); if (f){ S.extraLikes.push(f.id); save(); toast('Your boost worked — a new family is interested'); } }, 4000); return;
-    case 'bg': if (!plan().bg){ prevScreen='profile'; S.screen='plus'; S.planPick='platinum'; render(); toast('Background checks are a Platinum add-on'); return; } toast('Background check started with our third-party partner…'); setTimeout(()=>{ S.me.bg=true; render(); toast('Passed. PlayDu only received “pass”.'); }, 2200); return;
     case 'sheet': S.sheet=v; break;
-    case 'close': if (e.target!==el && el.classList.contains('overlay')) return; if (S.sheet==='kid' && !S.kids[S.kidEdit].name.trim() && S.kids.length>1){ S.kids.splice(S.kidEdit,1); S.kidSel=0; } S.sheet=null; break;
-    case 'unmatch': { const id = S.openChat; delete S.chats[id]; S.matches=S.matches.filter(m=>m!==id); S.events=S.events.filter(x=>x.fid!==id||x.status==='done'); S.openChat=null; S.sheet=null; S.screen='chats'; render(); toast('Unmatched and blocked'); return; }
+    case 'close': if (e.target!==el && el.classList.contains('overlay')) return; S.sheet=null; break;
+    case 'unmatch': delete S.chats[S.openChat]; S.openChat=null; S.sheet=null; S.screen='chats'; render(); toast('Unmatched and blocked'); return;
     case 'toast': S.sheet=null; render(); toast(v); return;
     case 'pick': S.planPick=v; break;
-    case 'buy': { const k = S.planPick || ORDER[ORDER.indexOf(S.plan)+1]; S.plan=k; if (!PLANS[k].intl && S.scope==='International') S.scope='National'; if (!PLANS[k].bg) S.me.bg=false; S.screen = prevScreen && prevScreen!=='plus' ? prevScreen : 'profile'; render(); toast(`${PLANS[k].name} active · ${PLANS[k].swipes===Infinity?'unlimited swipes':left()+' of '+PLANS[k].swipes+' swipes left today'}`); return; }
-    case 'lab-plan': S.plan=v; if (!PLANS[v].intl && S.scope==='International') S.scope='National'; if (!PLANS[v].bg) S.me.bg=false; lastCard=''; render(); toast(`${PLANS[v].name} · ${PLANS[v].swipes===Infinity?'unlimited swipes':left()+' of '+PLANS[v].swipes+' swipes left today'}`); return;
-    case 'lab-day': S.used=0; lastCard=''; render(); toast('New day — your daily swipes are back'); return;
-    case 'lab-like': { const f = pool().find(x => !S.seen[x.id] && !likesMe(x)) || ALL.find(x => !S.seen[x.id] && !likesMe(x)); if (!f){ toast('Every family already likes you'); return; } S.extraLikes.push(f.id); render(); toast(`${f.parent}’s family is interested — connect to match`); return; }
-    case 'lab-ver': if (S.me.verified){ S.me.verified=false; S.ver={id:false,selfie:false,child:false,busy:null,review:false}; } else { S.me.verified=true; S.ver={id:true,selfie:true,child:true,busy:null,review:false}; } break;
+    case 'buy': { const k = S.planPick || ORDER[ORDER.indexOf(S.plan)+1]; S.plan=k; S.screen = prevScreen && prevScreen!=='plus' ? prevScreen : 'profile'; render(); toast(planMsg(k)); return; }
+    case 'lab-plan': S.plan=v; render(); toast(planMsg(v)); return;
+    case 'lab-day': S.used=0; render(); toast(`New day — ${left()} swipes are back`); return;
+    case 'lab-like': { const p = pool().find(x => !likesMe(x) && !S.chats[x.id]); if (!p){ toast('Everyone here already likes you'); return; } S.extraLikes.push(p.id); if (S.seen[key(p.id)]==='pass') delete S.seen[key(p.id)]; render(); toast('Someone new likes you'); return; }
+    case 'lab-ver': S.me.verified=!S.me.verified; S.ver = S.me.verified ? {id:true,selfie:true,busy:null,review:false} : {id:false,selfie:false,busy:null,review:false}; break;
     case 'reset': S = fresh(); lastCard=''; lastScreen=null; break;
     default: return;
   }
   render();
 });
 document.addEventListener('input', e => {
-  const b = e.target.dataset.bind;
-  if (b){ if (b==='kid.name') S.kids[Number(e.target.dataset.i)].name = e.target.value; else setPath(b, e.target.value);
-    if (S.screen==='onboarding'){ const btn = $('#obNext'); if (btn) btn.disabled = S.step===0 ? !(/\S+@\S+\.\S+/.test(S.acct.email) && S.acct.pledge) : S.step===1 ? !(S.me.name.trim().length>1) : S.step===3 ? !(S.kids[0].name.trim() && S.kids[0].interests.length) : btn.disabled; }
-    save(); return; }
-  if (e.target.id==='composer'){ S.draft = e.target.value; save(); }
+  const b = e.target.dataset.bind; if (b){ const [o,k] = b.split('.'); S[o][k] = e.target.value; const btn = $('#obNext'); if (btn && S.screen==='onboarding') btn.disabled = !obOk(); save(); return; }
+  const f = e.target.dataset.filter; if (f){ S.filt[f] = parseInt(e.target.value,10); if (S.filt.min > S.filt.max){ if (f==='min') S.filt.max = S.filt.min; else S.filt.min = S.filt.max; }
+    ['min','max','km'].forEach(k => { const l = $('#f'+k); if (l) l.textContent = S.filt[k]; }); lastCard=''; renderView(); save(); }
 });
-document.addEventListener('submit', e => { if (e.target.dataset.form==='send'){ e.preventDefault(); const i = $('#msg'), val = i.value; sendMsg(val); } });
-document.addEventListener('keydown', e => {
-  if (S.screen!=='discover' || S.matchPop || S.sheet || S.call || /INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')) return;
-  if (e.key==='ArrowRight' && left()>0) fly('like'); if (e.key==='ArrowLeft' && left()>0) fly('pass');
-});
+document.addEventListener('submit', e => { if (e.target.dataset.form==='send'){ e.preventDefault(); sendMsg($('#msg').value); } });
+document.addEventListener('keydown', e => { if (S.screen!=='discover' || S.matchPop || S.sheet || /INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')) return; if (e.key==='ArrowRight') fly('like'); if (e.key==='ArrowLeft') fly('pass'); });
 
-/* ================= boot ================= */
 if (S.onboarded && (S.screen==='welcome'||S.screen==='onboarding')) S.screen='discover';
-render();
-setTimeout(()=>{ $('#splash').classList.add('out'); }, 1700);
+render(); setTimeout(()=>{ $('#splash').classList.add('out'); }, 1700);
 })();
 
 </script>
