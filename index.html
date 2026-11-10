@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#C9432E">
+<title>Parades — demo app</title>
+<meta name="description" content="Parades: a verified, singles-only app for grown-ups in Bangladesh — partner, friends and Café Hop. Clickable demo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%23C9432E'/%3E%3Ccircle cx='19' cy='21' r='8' fill='none' stroke='white' stroke-width='3.6'/%3E%3Ccircle cx='29' cy='21' r='8' fill='none' stroke='%23F3C9BF' stroke-width='3.6'/%3E%3Cline x1='11' y1='21' x2='11' y2='37' stroke='white' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --coral:#C9432E; --coral-ink:#A8361F; --coral-soft:#FBE3DD;
+  --teal:#1E5B52; --teal-soft:#DCEBE8; --amber:#6B4A12; --amber-soft:#F3E7CF;
+  --ink:#1C1B22; --muted:#5E5A66; --line:#E7E1D8; --sand:#EDE6DC;
+  --ground:#F6F4F0; --card:#FFFFFF; --gold:#E8A23B;
+  --font:Inter,"Hind Siliguri",system-ui,sans-serif; --display:Sora,"Hind Siliguri",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#E9E4DC;color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body.bn{--font:"Hind Siliguri",Inter,system-ui,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--coral-ink)}
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:56px;padding:24px}
+.pitch{max-width:380px;display:flex;flex-direction:column;gap:18px}
+.pitch h1{font-family:var(--display);font-size:44px;letter-spacing:-1.5px;margin:0;line-height:1.05}
+.pitch p{margin:0;font-size:16px;line-height:1.6;color:#3B3842}
+.pitch .pill{align-self:flex-start;background:var(--ink);color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.5px}
+.pitch ul{margin:0;padding-left:18px;line-height:1.8;font-size:15px;color:#3B3842}
+.phone{width:390px;height:844px;border-radius:48px;background:var(--ground);position:relative;overflow:hidden;box-shadow:0 0 0 10px #1C1B22,0 30px 80px rgba(28,27,34,.35)}
+@media (max-width:900px){
+  .stage{padding:0;display:block}
+  .pitch{display:none}
+  .phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
+}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+.scroll{flex:1;overflow-y:auto;padding:0 20px 24px;-webkit-overflow-scrolling:touch}
+.top{padding:52px 20px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.h1{font-family:var(--display);font-size:28px;letter-spacing:-.5px;margin:0}
+.h2{font-family:var(--display);font-size:18px;margin:0}
+.sub{font-size:14px;color:var(--muted);margin:2px 0 0}
+.logo{display:flex;align-items:center;gap:8px;font-family:Sora,sans-serif;font-weight:700;font-size:22px;letter-spacing:-.5px}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:0;background:var(--card);display:flex;align-items:center;justify-content:center;flex:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:16px;border:0;font-weight:600;font-size:16px;padding:0 18px;width:100%}
+.btn.primary{background:var(--coral);color:#fff}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn.teal{background:var(--teal);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{border:1.5px solid #DDD6CC;background:var(--card);color:var(--ink);border-radius:999px;padding:0 14px;min-height:40px;font-weight:600;font-size:14px;white-space:nowrap;flex:none}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips.row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips.row::-webkit-scrollbar{display:none}
+.card{background:var(--card);border-radius:20px;padding:16px}
+.label{font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:600}
+.b-teal{background:var(--teal-soft);color:var(--teal)}
+.b-coral{background:var(--coral-soft);color:var(--coral-ink)}
+.b-dark{background:var(--ink);color:#fff}
+.b-amber{background:var(--amber-soft);color:var(--amber)}
+.avatar{border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Sora,sans-serif;font-weight:700;flex:none}
+.nav{height:82px;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 4px 0;flex:none}
+.nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:62px;min-height:48px;font-size:11px;font-weight:600;color:var(--muted);position:relative}
+.nav button.on{color:var(--coral-ink)}
+.nav .dot{position:absolute;top:0;right:14px;width:9px;height:9px;border-radius:9px;background:var(--coral)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--sand);border-radius:14px;padding:4px;gap:4px}
+.seg button{border:0;border-radius:10px;min-height:40px;font-weight:600;font-size:14px;background:transparent;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(28,27,34,.12)}
+.deck{position:relative;flex:1;margin:6px 20px 0;min-height:0}
+.pcard{position:absolute;inset:0 0 8px;border-radius:28px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;touch-action:pan-y;user-select:none;box-shadow:0 10px 30px rgba(28,27,34,.12);transition:transform .25s ease}
+.pcard.dragging{transition:none}
+.pcard .silh{position:absolute;left:50%;top:14%;transform:translateX(-50%);opacity:.32;pointer-events:none}
+.pcard .tags-top{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap}
+.pcard .info{background:var(--ink);color:#fff;padding:16px 18px 18px;display:flex;flex-direction:column;gap:7px}
+.pcard .name{font-family:Sora,sans-serif;font-size:25px;font-weight:700}
+.pcard .meta{font-size:14px;color:#D8D4DE}
+.pcard .tag{background:#34313D;color:#fff;font-size:12px;font-weight:500;border-radius:999px;padding:5px 10px}
+.pcard .stamp{position:absolute;top:70px;font-family:Sora,sans-serif;font-weight:700;font-size:28px;border:4px solid;border-radius:12px;padding:4px 12px;opacity:0;pointer-events:none}
+.stamp.like{left:24px;color:#fff;border-color:#fff;background:rgba(201,67,46,.85);transform:rotate(-12deg)}
+.stamp.nope{right:24px;color:#fff;border-color:#fff;background:rgba(28,27,34,.75);transform:rotate(12deg)}
+.under{position:absolute;inset:14px 12px -4px;border-radius:28px;background:#E4DCD0}
+.actions{display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 0 4px}
+.round{border:0;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:0 4px 14px rgba(28,27,34,.10)}
+.foot-note{text-align:center;font-size:12px;color:var(--muted);padding-bottom:10px}
+.list{display:flex;flex-direction:column;gap:10px}
+.row-item{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:12px 14px;border:0;width:100%;text-align:left}
+.grow{flex:1;min-width:0}
+.t-name{font-weight:600;font-size:15px}
+.t-meta{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.small-btn{border:0;border-radius:12px;min-height:40px;padding:0 14px;font-weight:600;font-size:13px;flex:none}
+.input{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;min-height:50px;padding:0 14px;font-size:15px;outline:0}
+.input:focus{border-color:var(--ink)}
+textarea.input{padding:12px 14px;min-height:84px;resize:none}
+.progress{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;flex:1}
+.progress div{height:6px;border-radius:3px;background:#DDD6CC}
+.progress div.on{background:var(--coral)}
+.bubble{max-width:78%;border-radius:18px;padding:10px 13px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+.bubble.me{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:6px}
+.bubble.them{align-self:flex-start;background:#fff;color:var(--ink);border-bottom-left-radius:6px}
+.sys{align-self:center;font-size:11px;color:var(--muted);background:#fff;border-radius:999px;padding:5px 10px;text-align:center}
+.switch{flex:none;width:50px;height:30px;border-radius:999px;border:0;padding:3px;display:flex;background:#CFC8BD;justify-content:flex-start}
+.switch.on{background:var(--teal);justify-content:flex-end}
+.switch span{width:24px;height:24px;border-radius:999px;background:#fff;display:block}
+.setrow{display:flex;align-items:center;gap:12px;min-height:62px;border-bottom:1px solid #EFEAE2}
+.setrow:last-child{border-bottom:0}
+.overlay{position:absolute;inset:0;background:rgba(28,27,34,.55);display:flex;align-items:flex-end;z-index:20;animation:fade .2s}
+.sheet{background:var(--ground);width:100%;border-radius:28px 28px 0 0;padding:20px 20px 28px;display:flex;flex-direction:column;gap:14px;max-height:88%;overflow:auto;animation:up .25s ease}
+.match{position:absolute;inset:0;z-index:30;background:var(--coral);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:32px;text-align:center;animation:fade .25s}
+.toast{position:absolute;left:20px;right:20px;bottom:100px;z-index:40;background:var(--ink);color:#fff;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:500;animation:up .2s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.scan{height:180px;border-radius:20px;background:var(--ink);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff}
+.scan .bar{position:absolute;left:0;right:0;height:3px;background:var(--coral);box-shadow:0 0 18px var(--coral);animation:scan 1.4s linear infinite}
+@keyframes scan{from{top:0}to{top:100%}}
+.plan{border:2px solid var(--line);border-radius:20px;padding:16px;background:#fff;text-align:left;width:100%;display:flex;flex-direction:column;gap:6px}
+.plan.on{border-color:var(--coral)}
+.empty{text-align:center;color:var(--muted);padding:40px 20px;display:flex;flex-direction:column;gap:12px;align-items:center}
+:focus-visible{outline:3px solid #2F6FEB;outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="pitch" aria-label="About this demo">
+    <span class="pill">CLICKABLE DEMO · NOT A LIVE SERVICE</span>
+    <h1>parades</h1>
+    <p><strong>A verified, singles-only app for grown-ups in Bangladesh.</strong> Find a partner, make friends, or meet over coffee in the free windows of a busy day.</p>
+    <ul>
+      <li>NID + selfie verified · singles-only pledge</li>
+      <li>Partner · Friends · Café Hop</li>
+      <li>Circles: calm, short threads</li>
+      <li>Guardian, photo blur, Share-my-date, SOS</li>
+      <li>English / বাংলা</li>
+    </ul>
+    <p style="font-size:13px;color:var(--muted)">All people and places in this demo are fictional samples. Try swiping, matching, chatting, posting and switching language.</p>
+    <button class="btn ghost" data-a="reset" style="width:auto;align-self:flex-start;min-height:44px">Restart demo</button>
+  </aside>
+  <main class="phone" id="app" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- storage (safe) ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('parades:'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('parades:'+k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- i18n ---------- */
+const T = {
+  en: {
+    tagline:'Love, friends and coffee — for grown-ups ready for something real.',
+    welcomeH:'Your second chapter starts here.',
+    welcomeP:'A verified, singles-only space for adults in Bangladesh — never married, divorced, widowed or single parents.',
+    create:'Create my account', explore:'Explore the demo', rule:'Verified singles only · Women 18+, men 21+ (Bangladesh)',
+    discover:'Discover', cafe:'Café Hop', circles:'Circles', chats:'Chats', me:'Me',
+    partner:'Partner', friends:'Friends', cafeTab:'Café Hop',
+    swipesLeft:'{n} of 10 free swipes left today', continue:'Continue', back:'Back',
+    cafeSub:'Meet someone in the gaps of your day.', myWindow:'My free window', freeWhenYou:'Free when you are',
+    safeSpots:'Safe spots nearby', invite:'Invite', invited:'Invited',
+    circlesSub:'Short, kind conversations. No likes, no followers.', share:'Share something short…', post:'Post',
+    support:'Support', supported:'Supported', replies:'replies',
+    chatsSub:'Matches expire after 24 hours without a message.', newMatches:'New matches', messages:'Messages',
+    typeMsg:'Type a message', guardian:'Guardian',
+    safety:'Safety centre', plus:'Parades Plus', editProfile:'Edit', settings:'Settings',
+    quiet:'Quiet hours at work', quietH:'No notifications 9 am – 6 pm',
+    blur:'Blur my photos', blurH:'Clear only after we match',
+    guardianH:'A trusted family member can view my chats',
+    hideWork:'Hide from colleagues', hideWorkH:'Skip people at my workplace',
+    bangla:'বাংলা interface', banglaH:'Switch the app to Bangla',
+    bigText:'Larger text', bigTextH:'Easier reading',
+    itsMatch:'It’s a match!', sayHi:'Say hello', keepSwiping:'Keep swiping',
+    noMore:'You’re all caught up', noMoreP:'New verified people join every day. Try another mode or come back tomorrow.',
+    filters:'Filters', apply:'Apply'
+  },
+  bn: {
+    tagline:'ভালোবাসা, বন্ধুত্ব আর কফি — যারা সত্যিকারের কিছু খুঁজছেন তাদের জন্য।',
+    welcomeH:'আপনার নতুন অধ্যায় এখান থেকেই।',
+    welcomeP:'বাংলাদেশের প্রাপ্তবয়স্ক অবিবাহিত, তালাকপ্রাপ্ত, বিধবা/বিপত্নীক ও সিঙ্গেল প্যারেন্টদের জন্য যাচাইকৃত একটি জায়গা।',
+    create:'অ্যাকাউন্ট খুলুন', explore:'ডেমো দেখুন', rule:'শুধু যাচাইকৃত সিঙ্গেলরা · নারী ১৮+, পুরুষ ২১+ (বাংলাদেশ)',
+    discover:'খুঁজুন', cafe:'ক্যাফে হপ', circles:'সার্কেল', chats:'চ্যাট', me:'আমি',
+    partner:'সঙ্গী', friends:'বন্ধু', cafeTab:'ক্যাফে হপ',
+    swipesLeft:'আজ ১০টির মধ্যে {n}টি ফ্রি সোয়াইপ বাকি', continue:'এগিয়ে যান', back:'পেছনে',
+    cafeSub:'ব্যস্ত দিনের ফাঁকে কারও সাথে দেখা করুন।', myWindow:'আমার ফাঁকা সময়', freeWhenYou:'আপনার সময়েই যারা ফ্রি',
+    safeSpots:'কাছের নিরাপদ জায়গা', invite:'আমন্ত্রণ', invited:'পাঠানো হয়েছে',
+    circlesSub:'ছোট, সদয় আলাপ। লাইক নেই, ফলোয়ার নেই।', share:'ছোট করে কিছু লিখুন…', post:'পোস্ট',
+    support:'পাশে আছি', supported:'পাশে আছেন', replies:'উত্তর',
+    chatsSub:'২৪ ঘণ্টায় মেসেজ না দিলে ম্যাচ শেষ হয়ে যায়।', newMatches:'নতুন ম্যাচ', messages:'মেসেজ',
+    typeMsg:'মেসেজ লিখুন', guardian:'অভিভাবক',
+    safety:'নিরাপত্তা কেন্দ্র', plus:'প্যারেডস প্লাস', editProfile:'এডিট', settings:'সেটিংস',
+    quiet:'কাজের সময় নীরব', quietH:'সকাল ৯টা – সন্ধ্যা ৬টা নোটিফিকেশন বন্ধ',
+    blur:'আমার ছবি ঝাপসা রাখুন', blurH:'ম্যাচের পরেই শুধু পরিষ্কার',
+    guardianH:'পরিবারের বিশ্বস্ত কেউ আমার চ্যাট দেখতে পারবেন',
+    hideWork:'সহকর্মীদের থেকে লুকান', hideWorkH:'আমার অফিসের মানুষদের দেখাবে না',
+    bangla:'বাংলা ইন্টারফেস', banglaH:'অ্যাপটি বাংলায় দেখুন',
+    bigText:'বড় লেখা', bigTextH:'পড়তে সহজ',
+    itsMatch:'ম্যাচ হয়েছে!', sayHi:'হ্যালো বলুন', keepSwiping:'আরও দেখুন',
+    noMore:'আজকের মতো শেষ', noMoreP:'প্রতিদিন নতুন যাচাইকৃত মানুষ যোগ দিচ্ছেন। অন্য মোড দেখুন বা কাল আবার আসুন।',
+    filters:'ফিল্টার', apply:'প্রয়োগ করুন'
+  }
+};
+
+/* ---------- sample data (fictional) ---------- */
+const WOMEN = [
+  {id:'w1',name:'Nadia',age:34,job:'Banker',area:'Gulshan',km:2,status:'Divorced',kids:'Mum of 1',intent:'Marriage',tone:'#D9A08F',likes:true,statusVerified:true,prompt:'Sunday is pancakes with my daughter, then a long walk by the lake.',tags:['Non-smoker','Loves cooking','Family-first']},
+  {id:'w2',name:'Farzana',age:41,job:'Doctor',area:'Dhanmondi',km:5,status:'Widowed',kids:'Has a son',intent:'Marriage',tone:'#8FB3AB',likes:false,statusVerified:true,prompt:'Looking for someone kind who understands night shifts.',tags:['Books','Tea over coffee','Calm']},
+  {id:'w3',name:'Sabrina',age:37,job:'Architect',area:'Banani',km:3,status:'Never married',kids:'Open to kids',intent:'Serious relationship',tone:'#C9B48A',likes:true,statusVerified:false,prompt:'Best date idea: chai and a rooftop that isn’t a restaurant.',tags:['Design','Travel','Foodie']},
+  {id:'w4',name:'Tahmina',age:45,job:'Entrepreneur',area:'Uttara',km:7,status:'Divorced',kids:'2 teens',intent:'Companionship',tone:'#B79BC4',likes:false,statusVerified:true,prompt:'I run a boutique. I can’t run my love life the same way — I need help.',tags:['Fashion','Road trips','Honest']},
+  {id:'w5',name:'Rehana',age:52,job:'Retired teacher',area:'Mirpur',km:6,status:'Widowed',kids:'Grown-up kids',intent:'Companionship',tone:'#9DB59A',likes:true,statusVerified:true,prompt:'Evening walks and old Bangla songs. Looking for good company.',tags:['Rabindra Sangeet','Gardening','Walks']}
+];
+const MEN = [
+  {id:'m1',name:'Arif',age:39,job:'Engineer',area:'Uttara',km:4,status:'Divorced',kids:'Dad of 2',intent:'Marriage',tone:'#7FA3B8',likes:true,statusVerified:true,prompt:'Friday cricket with my boys, then biryani at home. Want someone to share it with.',tags:['Cricket','Cooking','Non-smoker']},
+  {id:'m2',name:'Imran',age:36,job:'Doctor',area:'Dhanmondi',km:3,status:'Never married',kids:'Open to kids',intent:'Serious relationship',tone:'#C9A27F',likes:false,statusVerified:false,prompt:'Night shifts taught me to value a quiet breakfast with good conversation.',tags:['Fitness','Movies','Tea']},
+  {id:'m3',name:'Kamal',age:47,job:'Businessman',area:'Gulshan',km:2,status:'Widowed',kids:'Has a daughter',intent:'Marriage',tone:'#8FB3AB',likes:true,statusVerified:true,prompt:'My daughter told me to join. She’s probably right.',tags:['Travel','Family-first','Reading']},
+  {id:'m4',name:'Zubair',age:42,job:'IT consultant',area:'Banani',km:3,status:'Divorced',kids:'Dad of 1',intent:'Serious relationship',tone:'#B79BC4',likes:false,statusVerified:true,prompt:'Back from London after 10 years. Re-learning Dhaka traffic and life.',tags:['UK returnee','Football','Coffee']},
+  {id:'m5',name:'Shafiq',age:55,job:'Retired banker',area:'Mirpur',km:6,status:'Widowed',kids:'Grown-up kids',intent:'Companionship',tone:'#9DB59A',likes:true,statusVerified:true,prompt:'Mornings in the park, afternoons with a book. Looking for a companion.',tags:['Walks','Poetry','Chess']}
+];
+const FRIENDS = [
+  {id:'f1',name:'Rumana',age:39,job:'Teacher',area:'Mirpur',km:4,status:'Single mum',kids:'Mum of 2',intent:'Friends',tone:'#8FB3AB',likes:true,prompt:'My kids need friends. Honestly, so do I.',tags:['Playdates','Book club','Walks']},
+  {id:'f2',name:'Rafiq',age:44,job:'Pharma manager',area:'Tejgaon',km:3,status:'Single dad',kids:'Dad of 1',intent:'Friends',tone:'#C9A27F',likes:true,prompt:'Looking for a badminton partner and dads who get it.',tags:['Badminton','Dad life','Weekend trips']},
+  {id:'f3',name:'Shila',age:44,job:'HR lead',area:'Uttara',km:6,status:'Divorced',kids:'Has a son',intent:'Friends',tone:'#D9A08F',likes:false,prompt:'Walking partner wanted for the Uttara lake path.',tags:['Walks','Cooking','Movies']},
+  {id:'f4',name:'Mahbub',age:50,job:'Professor',area:'Dhanmondi',km:5,status:'Widowed',kids:'Grown-up kids',intent:'Friends',tone:'#9DB59A',likes:true,prompt:'Chess, tea, and long conversations about anything.',tags:['Chess','History','Tea']}
+];
+const SLOTS = [
+  {id:'lunch',en:'Lunch 1–2 pm',bn:'দুপুর ১–২টা',count:6,people:[
+    {name:'Tania',age:36,meta:'Coffee · 900 m · Partner',tone:'#C9432E',id:'c1'},
+    {name:'Rafiq',age:44,meta:'Tea · 1.1 km · Friends',tone:'#1E5B52',id:'c2'},
+    {name:'Mehreen',age:42,meta:'Coffee · 1.4 km · Partner',tone:'#6B4A12',id:'c3'}]},
+  {id:'after',en:'After office 6–7 pm',bn:'অফিস শেষে ৬–৭টা',count:11,people:[
+    {name:'Shila',age:44,meta:'Walk + tea · 1.8 km · Friends',tone:'#1E5B52',id:'c4'},
+    {name:'Nadia',age:34,meta:'Coffee · 2 km · Partner',tone:'#C9432E',id:'c5'},
+    {name:'Kamal',age:47,meta:'Tea · 700 m · Partner',tone:'#6B4A12',id:'c6'}]},
+  {id:'sat',en:'Saturday morning',bn:'শনিবার সকাল',count:9,people:[
+    {name:'Rumana',age:39,meta:'Park + kids · 4 km · Friends',tone:'#1E5B52',id:'c7'},
+    {name:'Farzana',age:41,meta:'Brunch · 5 km · Partner',tone:'#C9432E',id:'c8'},
+    {name:'Mahbub',age:50,meta:'Chess + tea · 3 km · Friends',tone:'#6B4A12',id:'c9'}]}
+];
+const VENUES = [
+  {name:'[Partner café A]',meta:'350 m · busy, public, women-friendly'},
+  {name:'[Partner tea house B]',meta:'600 m · quiet tables, CCTV'},
+  {name:'[Partner bakery C]',meta:'1 km · family seating'}
+];
+const TOPICS = ['For you','Single parents','Second chapter','Dhaka weekends','Faith & family','Career & balance'];
+const REPLIES = [
+  'That sounds lovely 😊 Tell me more about your week?',
+  'Ha, same here! Work has been non-stop.',
+  'I’m free tomorrow at lunch if you’d like a Café Hop?',
+  'That’s really kind of you to say.',
+  'My kids would laugh at this conversation 😄'
+];
+
+/* ---------- state ---------- */
+const fresh = () => ({
+  screen:'welcome', step:0, lang:'en',
+  me:{name:'Rahim',gender:'man',age:38,status:'Divorced',kids:'Dad of 1',intent:'Marriage',modes:{partner:true,friends:true,cafe:true},area:'Gulshan',job:'Finance manager',pledge:false,verified:false},
+  mode:'partner', idx:{partner:0,friends:0,cafe:0}, swipes:10,
+  slot:'lunch', invited:{},
+  topic:'For you', supported:{},
+  posts:[
+    {id:1,topic:'Single parents',name:'Shila',tone:'#1E5B52',time:'2h',text:'Finished a 10-hour shift, made dinner, homework done. Small win: I sat down with tea for 15 minutes. How do you all find “me time”?',replies:24},
+    {id:2,topic:'Dhaka weekends',name:'Arif',tone:'#6B4A12',time:'5h',text:'Any kid-friendly place in Uttara where parents can actually talk too? Going this Friday with my two.',replies:11},
+    {id:3,topic:'Second chapter',name:'Rehana',tone:'#9DB59A',time:'8h',text:'Two years after losing my husband, my children told me to join. First coffee next week. Nervous but hopeful.',replies:57},
+    {id:4,topic:'Career & balance',name:'Farzana',tone:'#C9432E',time:'1d',text:'Night shifts this week. If anyone near Dhanmondi wants a 7 am coffee after, I’m in.',replies:8},
+    {id:5,topic:'Faith & family',name:'Kamal',tone:'#7FA3B8',time:'1d',text:'How did you introduce someone new to your family? Looking for gentle advice.',replies:19}
+  ],
+  draft:'',
+  matches:[], chats:{}, openChat:null,
+  settings:{quiet:true,blur:true,guardian:false,hideWork:true,bangla:false,bigText:false},
+  plan:'gold', sheet:null, matchPop:null, toast:null, filter:{maxAge:60,km:10,intent:'Any'}
+});
+let S = store.get('state', null) || fresh();
+if (S.screen === 'chat' && !S.openChat) S.screen = 'chats';
+const save = () => store.set('state', S);
+const L = () => T[S.lang];
+const t = (k, vars) => { let s = (L()[k] !== undefined ? L()[k] : T.en[k]) || k; if (vars) for (const v in vars) s = s.replace('{'+v+'}', vars[v]); return s; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app = document.getElementById('app');
+
+/* ---------- icons ---------- */
+const I = {
+  heart:(c,f)=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="${f||'none'}" stroke="${c}" stroke-width="2" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>`,
+  cup:(c,f)=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="${f||'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5V9z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2" fill="none"/></svg>`,
+  rings:(c)=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" aria-hidden="true"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>`,
+  chat:(c,f)=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="${f||'none'}" stroke="${c}" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H10l-6 4V5z"/></svg>`,
+  user:(c,f)=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="${f||'none'}" stroke="${c}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none"/></svg>`,
+  back:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1B22" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>`,
+  x:`<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5E5A66" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  send:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+  shield:(c)=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>`,
+  filter:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C1B22" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>`,
+  more:`<svg width="20" height="20" viewBox="0 0 24 24" fill="#1C1B22" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>`,
+  star:`<svg width="18" height="18" viewBox="0 0 24 24" fill="#E8A23B" aria-hidden="true"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/></svg>`,
+  silh:`<svg class="silh" width="200" height="230" viewBox="0 0 200 220" aria-hidden="true"><circle cx="100" cy="70" r="46" fill="#fff"/><path d="M20 220c6-60 40-94 80-94s74 34 80 94z" fill="#fff"/></svg>`
+};
+const logo = (size, bg, a, b) => `<svg width="${size}" height="${size}" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="14" fill="${bg}"/><circle cx="19" cy="21" r="8" fill="none" stroke="${a}" stroke-width="3.6"/><circle cx="29" cy="21" r="8" fill="none" stroke="${b}" stroke-width="3.6"/><line x1="11" y1="21" x2="11" y2="37" stroke="${a}" stroke-width="3.6" stroke-linecap="round"/></svg>`;
+const av = (name, tone, size) => `<div class="avatar" style="width:${size}px;height:${size}px;background:${tone};font-size:${Math.round(size*.38)}px">${esc(name[0])}</div>`;
+
+/* ---------- deck helpers ---------- */
+function deckFor(mode){
+  if (mode === 'friends') return FRIENDS;
+  if (mode === 'cafe') {
+    const slot = SLOTS.find(s => s.id === S.slot);
+    return (S.me.gender === 'man' ? WOMEN : MEN).slice(0,3).map((p,i) => Object.assign({}, p, {free: slot[S.lang] }));
+  }
+  const pool = S.me.gender === 'man' ? WOMEN : MEN;
+  return pool.filter(p => p.age <= S.filter.maxAge && p.km <= S.filter.km && (S.filter.intent === 'Any' || p.intent === S.filter.intent));
+}
+const freeLine = p => p.free ? p.free : (p.km <= 3 ? 'Free today 1–2 pm' : 'Free after 7 pm');
+
+/* ---------- screens ---------- */
+function navBar(){
+  const unread = Object.values(S.chats).some(c => c.unread);
+  const items = [
+    ['discover', t('discover'), on => I.heart(on?'#C9432E':'#5E5A66', on?'#C9432E':'none')],
+    ['cafe', t('cafe'), on => I.cup(on?'#C9432E':'#5E5A66', on?'#FBE3DD':'none')],
+    ['circles', t('circles'), on => I.rings(on?'#C9432E':'#5E5A66')],
+    ['chats', t('chats'), on => I.chat(on?'#C9432E':'#5E5A66', on?'#FBE3DD':'none')],
+    ['profile', t('me'), on => I.user(on?'#C9432E':'#5E5A66', on?'#FBE3DD':'none')]
+  ];
+  const cur = S.screen === 'chat' ? 'chats' : (S.screen === 'safety' || S.screen === 'plus') ? 'profile' : S.screen;
+  return `<nav class="nav" aria-label="Main">${items.map(([id,label,ic]) => `<button data-a="go" data-v="${id}" class="${cur===id?'on':''}" aria-current="${cur===id?'page':'false'}">${ic(cur===id)}${label}${id==='chats'&&unread?'<span class="dot" aria-label="unread"></span>':''}</button>`).join('')}</nav>`;
+}
+
+function welcome(){
+  return `<section class="screen" style="background:var(--coral);color:#fff;padding:60px 26px 34px;gap:22px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="logo">${logo(36,'#fff','#C9432E','#1E5B52')}<span>parades</span></div>
+      ${langToggle(true)}
+    </div>
+    <div style="position:relative;height:270px">
+      <div style="position:absolute;left:12px;top:26px;width:165px;height:210px;border-radius:28px;background:#EDE6DC;transform:rotate(-8deg);display:flex;align-items:flex-end;padding:16px">
+        <div style="color:#1C1B22;font-weight:600;font-size:14px">Nadia, 34<br><span style="font-weight:500;color:#5E5A66">Divorced · Mum of 1</span></div></div>
+      <div style="position:absolute;right:10px;top:54px;width:165px;height:210px;border-radius:28px;background:#1E5B52;transform:rotate(7deg);display:flex;align-items:flex-end;padding:16px">
+        <div style="font-weight:600;font-size:14px">Kamal, 47<br><span style="font-weight:500;color:#CFE3DF">Widowed · Businessman</span></div></div>
+      <div style="position:absolute;left:50%;top:4px;margin-left:-32px;width:64px;height:64px;border-radius:99px;background:#fff;display:flex;align-items:center;justify-content:center">${I.heart('#C9432E')}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <h1 style="margin:0;font-family:var(--display);font-size:32px;line-height:1.15;letter-spacing:-.8px">${t('welcomeH')}</h1>
+      <p style="margin:0;font-size:15px;line-height:1.55;color:#FFE9E4">${t('welcomeP')}</p>
+    </div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+      <button class="btn" style="background:#fff;color:#1C1B22" data-a="start">${t('create')}</button>
+      <button class="btn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.7)" data-a="skip">${t('explore')}</button>
+      <p style="margin:2px 0 0;text-align:center;font-size:12px;color:#FFE9E4">${t('rule')}</p>
+    </div>
+  </section>`;
+}
+function langToggle(onCoral){
+  const on = 'background:#fff;color:#1C1B22', off = onCoral ? 'background:transparent;color:#fff' : 'background:transparent;color:#5E5A66';
+  return `<div style="display:flex;background:${onCoral?'rgba(0,0,0,.18)':'var(--sand)'};border-radius:999px;padding:4px" role="group" aria-label="Language">
+    <button data-a="lang" data-v="en" style="border:0;border-radius:999px;padding:8px 12px;font-weight:600;font-size:13px;${S.lang==='en'?on:off}">EN</button>
+    <button data-a="lang" data-v="bn" style="border:0;border-radius:999px;padding:8px 12px;font-weight:600;font-size:13px;${S.lang==='bn'?on:off}">বাংলা</button></div>`;
+}
+
+function onboarding(){
+  const st = S.step, me = S.me;
+  const head = `<div class="top" style="padding-bottom:4px"><button class="iconbtn" data-a="obBack" aria-label="${t('back')}">${I.back}</button>
+    <div class="progress">${[0,1,2,3,4].map(i=>`<div class="${i<=st?'on':''}"></div>`).join('')}</div></div>`;
+  let body = '', canGo = true, cta = t('continue');
+  if (st === 0){
+    body = `<h1 class="h1">Your mobile number</h1><p class="sub">We'll send a one-time code. Your number is never shown.</p>
+      <label class="label" for="ph" style="margin-top:12px">Phone</label>
+      <div style="display:flex;gap:8px"><div class="input" style="width:90px;display:flex;align-items:center">🇧🇩 +880</div><input id="ph" class="input" inputmode="tel" value="1712 345 678" aria-label="Phone number"></div>
+      <label class="label" for="otp">Code (demo: any 4 digits)</label><input id="otp" class="input" inputmode="numeric" maxlength="4" value="2580">
+      <label class="label" for="nm">First name</label><input id="nm" class="input" data-bind="name" value="${esc(me.name)}">`;
+  } else if (st === 1){
+    body = `<h1 class="h1">Verify it's really you</h1><p class="sub">NID or passport + a live selfie. Your ID is never shown on your profile.</p>
+      ${me.verified ? `<div class="card" style="display:flex;gap:12px;align-items:center;margin-top:10px"><div style="width:44px;height:44px;border-radius:12px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center">${I.shield('#1E5B52')}</div><div><div class="t-name">Verified</div><div class="t-meta">NID checked · Selfie matched · Age ${me.age}</div></div></div>`
+      : S.scanning ? `<div class="scan" style="margin-top:10px"><div class="bar"></div><div style="font-weight:600">Checking NID and selfie…</div></div>`
+      : `<div class="scan" style="margin-top:10px;background:#2A2833"><div style="text-align:center;line-height:1.6"><div style="font-weight:600">Place your NID in the frame</div><div style="font-size:13px;color:#CFC8D6">then take a quick selfie</div></div></div>
+         <button class="btn dark" data-a="scan" style="margin-top:4px">Scan NID + selfie (demo)</button>`}
+      <div class="card" style="font-size:13px;line-height:1.55;color:var(--muted)">Minimum age in Bangladesh: <strong style="color:var(--ink)">women 18, men 21</strong> (legal marriage age). UK and Europe: 18 for everyone.</div>`;
+    canGo = me.verified;
+  } else if (st === 2){
+    body = `<h1 class="h1">Singles only</h1><p class="sub">Parades is for unmarried adults. This keeps everyone safe and respected.</p>
+      <div class="label" style="margin-top:12px">My marital status</div>
+      <div class="chips">${['Never married','Divorced','Widowed'].map(s=>`<button class="chip ${me.status===s?'on':''}" data-a="me" data-k="status" data-v="${s}">${s}</button>`).join('')}</div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <label style="display:flex;gap:12px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-a="pledge" ${me.pledge?'checked':''} style="width:22px;height:22px;margin-top:2px;accent-color:#C9432E">
+        <span style="font-size:14px;line-height:1.5"><strong>I am not currently married.</strong> I understand that married members are removed and banned by NID.</span></label>
+      </div>
+      <div class="card" style="display:flex;gap:12px;align-items:center"><span class="badge b-teal">Optional</span><span style="font-size:13px;line-height:1.5;color:var(--muted)">Upload a divorce or death certificate for a <strong style="color:var(--ink)">Status verified</strong> badge.</span></div>`;
+    canGo = me.pledge;
+  } else if (st === 3){
+    const ageOk = me.gender === 'woman' ? me.age >= 18 : me.age >= 21;
+    body = `<h1 class="h1">A little about you</h1>
+      <div class="label" style="margin-top:8px">I am a</div>
+      <div class="chips">${[['man','Man'],['woman','Woman']].map(([v,l])=>`<button class="chip ${me.gender===v?'on':''}" data-a="me" data-k="gender" data-v="${v}">${l}</button>`).join('')}</div>
+      <label class="label" for="age">Age (from your ID)</label><input id="age" class="input" type="number" min="16" max="90" data-bind="age" value="${me.age}">
+      ${ageOk?'':`<div class="card" style="background:var(--coral-soft);color:var(--coral-ink);font-size:14px;font-weight:600">Minimum age for ${me.gender==='woman'?'women is 18':'men is 21'} in Bangladesh.</div>`}
+      <div class="label">Kids</div>
+      <div class="chips">${['No kids','Mum of 1','Dad of 1','Dad of 2','Kids live with me','Grown-up kids','Open to kids'].filter(k=>!(me.gender==='man'&&k.startsWith('Mum'))&&!(me.gender==='woman'&&k.startsWith('Dad'))).map(k=>`<button class="chip ${me.kids===k?'on':''}" data-a="me" data-k="kids" data-v="${k}">${k}</button>`).join('')}</div>
+      <div class="label">Looking for</div>
+      <div class="chips">${['Marriage','Serious relationship','Companionship'].map(k=>`<button class="chip ${me.intent===k?'on':''}" data-a="me" data-k="intent" data-v="${k}">${k}</button>`).join('')}</div>
+      <label class="label" for="job">Work</label><input id="job" class="input" data-bind="job" value="${esc(me.job)}">`;
+    canGo = ageOk;
+  } else {
+    body = `<h1 class="h1">How do you want to use Parades?</h1><p class="sub">Turn on any of the three. You can change this later.</p>
+      ${[['partner','Partner','Swipe on verified singles for marriage or a serious relationship.','#C9432E'],['friends','Friends','Meet parents and people in the same life stage.','#1E5B52'],['cafe','Café Hop','Meet someone nearby in your free window.','#6B4A12']].map(([k,n,d,c])=>`
+        <button class="row-item" data-a="mode-toggle" data-v="${k}" style="border:2px solid ${me.modes[k]?c:'transparent'}">
+          <div class="grow"><div class="t-name" style="color:${c}">${n}</div><div style="font-size:13px;color:var(--muted);line-height:1.45">${d}</div></div>
+          <span class="switch ${me.modes[k]?'on':''}" aria-hidden="true"><span></span></span></button>`).join('')}`;
+    canGo = Object.values(me.modes).some(Boolean); cta = 'Start meeting people';
+  }
+  return `<section class="screen">${head}<div class="scroll" style="display:flex;flex-direction:column;gap:12px;padding-top:8px">${body}</div>
+    <div style="padding:12px 20px 28px"><button class="btn primary" data-a="obNext" ${canGo?'':'disabled'}>${cta}</button></div></section>`;
+}
+
+function discover(){
+  const list = deckFor(S.mode), i = S.idx[S.mode] || 0, p = list[i];
+  const modes = [['partner',t('partner')],['friends',t('friends')],['cafe',t('cafeTab')]].filter(([k])=>S.me.modes[k]);
+  let deck;
+  if (S.swipes <= 0) deck = `<div class="empty"><div style="font-family:var(--display);font-size:22px;color:var(--ink)">Daily swipes used</div><p style="margin:0">Free members get 10 a day — quality over endless scrolling.</p><button class="btn primary" data-a="go" data-v="plus" style="width:auto">See Parades Plus</button></div>`;
+  else if (!p) deck = `<div class="empty"><div style="font-family:var(--display);font-size:22px;color:var(--ink)">${t('noMore')}</div><p style="margin:0">${t('noMoreP')}</p><button class="btn ghost" data-a="resetDeck" style="width:auto">Start over (demo)</button></div>`;
+  else deck = `<div class="under"></div>
+    <article class="pcard" id="pcard" style="background:${p.tone}" aria-label="${esc(p.name)}, ${p.age}">
+      ${I.silh}
+      <div class="tags-top"><span class="badge" style="background:#fff;color:#1E5B52">✓ Verified</span>${p.statusVerified?'<span class="badge" style="background:#fff;color:#6B4A12">Status verified</span>':''}<span class="badge b-dark">${esc(freeLine(p))}</span></div>
+      <div class="stamp like">${S.mode==='friends'?'FRIEND':'LIKE'}</div><div class="stamp nope">PASS</div>
+      <div class="info">
+        <div class="name">${esc(p.name)}, ${p.age}</div>
+        <div class="meta">${esc(p.status)} · ${esc(p.kids)} · ${esc(p.job)} · ${esc(p.area)} · ${p.km} km</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="tag" style="background:#C9432E">${esc(p.intent)}</span>${p.tags.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>
+        <div style="font-size:14px;line-height:1.5">“${esc(p.prompt)}”</div>
+      </div>
+    </article>`;
+  return `<section class="screen">
+    <div class="top" style="padding-bottom:10px"><div class="logo">${logo(30,'#C9432E','#fff','#F3C9BF')}<span>parades</span></div>
+      <div style="display:flex;gap:8px">${langToggle(false)}<button class="iconbtn" data-a="sheet" data-v="filters" aria-label="${t('filters')}">${I.filter}</button></div></div>
+    <div style="padding:0 20px"><div class="seg" style="grid-template-columns:repeat(${modes.length},minmax(0,1fr))">${modes.map(([k,l])=>`<button class="${S.mode===k?'on':''}" data-a="mode" data-v="${k}">${l}</button>`).join('')}</div></div>
+    ${S.mode==='cafe'?`<div style="padding:10px 20px 0" class="chips row">${SLOTS.map(s=>`<button class="chip ${S.slot===s.id?'on':''}" data-a="slot" data-v="${s.id}">${s[S.lang]}</button>`).join('')}</div>`:''}
+    <div class="deck">${deck}</div>
+    ${p && S.swipes>0 ? `<div class="actions">
+      <button class="round" style="width:60px;height:60px" data-a="swipe" data-v="pass" aria-label="Pass">${I.x}</button>
+      <button class="round" style="width:52px;height:52px" data-a="swipe" data-v="cafe" aria-label="Invite for a Café Hop">${I.cup('#6B4A12')}</button>
+      <button class="round" style="width:72px;height:72px;background:#C9432E;box-shadow:0 6px 18px rgba(201,67,46,.35)" data-a="swipe" data-v="like" aria-label="Like">${I.heart('#fff','#fff')}</button>
+    </div><div class="foot-note">${t('swipesLeft',{n:S.swipes})}</div>` : '<div style="height:12px"></div>'}
+    ${navBar()}</section>`;
+}
+
+function cafe(){
+  const slot = SLOTS.find(s=>s.id===S.slot);
+  return `<section class="screen"><div class="top"><div><h1 class="h1">${t('cafe')}</h1><p class="sub">${t('cafeSub')}</p></div></div>
+  <div class="scroll" style="display:flex;flex-direction:column;gap:14px">
+    <div style="background:var(--teal);color:#fff;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#CFE3DF">${t('myWindow')}</span>
+        <button data-a="sheet" data-v="area" style="border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:999px;padding:6px 12px;font-weight:600;font-size:13px">Near ${esc(S.me.area)} ▾</button></div>
+      <div class="chips">${SLOTS.map(s=>`<button class="chip" data-a="slot" data-v="${s.id}" style="${S.slot===s.id?'background:#fff;color:#1E5B52;border-color:#fff':'background:transparent;color:#fff;border-color:rgba(255,255,255,.45)'}">${s[S.lang]}</button>`).join('')}</div>
+      <div style="font-size:14px;line-height:1.5;color:#E6F1EE"><strong style="color:#fff">${slot.count}</strong> verified people are free in this window within 2 km.</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><h2 class="h2">${t('freeWhenYou')}</h2><span class="sub">${slot[S.lang]}</span></div>
+    <div class="list">${slot.people.map(p=>`<div class="row-item">${av(p.name,p.tone,48)}<div class="grow"><div class="t-name">${esc(p.name)}, ${p.age}</div><div class="t-meta">${esc(p.meta)}</div></div>
+      <button class="small-btn" data-a="invite" data-v="${p.id}" style="${S.invited[p.id]?'background:var(--teal-soft);color:var(--teal)':'background:var(--coral-soft);color:var(--coral-ink)'}">${S.invited[p.id]?t('invited'):t('invite')}</button></div>`).join('')}</div>
+    <h2 class="h2">${t('safeSpots')}</h2>
+    <div class="list">${VENUES.map(v=>`<div class="row-item" style="background:var(--sand)"><div style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center">${I.cup('#6B4A12')}</div><div class="grow"><div class="t-name">${esc(v.name)}</div><div class="t-meta">${esc(v.meta)}</div></div><span class="badge b-teal">Partner</span></div>`).join('')}</div>
+    <div class="card" style="font-size:13px;line-height:1.55;color:var(--muted)"><strong style="color:var(--ink)">How it works:</strong> both people must be free in the same window. Meetups are only suggested at busy public partner venues, and you can share the plan with a trusted contact.</div>
+  </div>${navBar()}</section>`;
+}
+
+function circles(){
+  const posts = S.posts.filter(p => S.topic==='For you' || p.topic===S.topic);
+  return `<section class="screen"><div class="top"><div><h1 class="h1">${t('circles')}</h1><p class="sub">${t('circlesSub')}</p></div></div>
+  <div style="padding:0 20px 10px" class="chips row">${TOPICS.map(x=>`<button class="chip ${S.topic===x?'on':''}" data-a="topic" data-v="${x}">${x}</button>`).join('')}</div>
+  <div class="scroll" style="display:flex;flex-direction:column;gap:10px">
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;padding:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start">${av(S.me.name,'#C9432E',34)}
+      <textarea id="composer" class="input" maxlength="280" placeholder="${t('share')}" aria-label="${t('share')}" style="border:0;min-height:60px;padding:6px 0">${esc(S.draft)}</textarea></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="sub" id="cc">${S.draft.length}/280 · ${S.topic==='For you'?'Single parents':esc(S.topic)}</span><button class="small-btn" style="background:var(--coral);color:#fff" data-a="post">${t('post')}</button></div>
+    </div>
+    ${posts.map(p=>`<article class="card" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px;align-items:center">${av(p.name,p.tone,36)}<div><div class="t-name" style="font-size:14px">${esc(p.name)}</div><div class="t-meta" style="font-size:12px">${esc(p.topic)} · ${esc(p.time)}</div></div></div>
+      <div style="font-size:15px;line-height:1.5">${esc(p.text)}</div>
+      <div style="display:flex;gap:18px">
+        <button data-a="support" data-v="${p.id}" style="border:0;background:transparent;padding:0;min-height:32px;font-weight:600;font-size:13px;color:${S.supported[p.id]?'var(--coral-ink)':'var(--muted)'}">${S.supported[p.id]?'♥ '+t('supported'):'♡ '+t('support')}</button>
+        <span style="font-weight:600;font-size:13px;color:var(--muted);align-self:center">${p.replies} ${t('replies')}</span>
+        <button data-a="toast" data-v="Reported to moderators. Thank you." style="border:0;background:transparent;padding:0;margin-left:auto;font-size:12px;color:var(--muted)">Report</button></div>
+    </article>`).join('') || '<div class="empty">No posts in this circle yet. Be the first.</div>'}
+  </div>${navBar()}</section>`;
+}
+
+function chats(){
+  const ids = Object.keys(S.chats);
+  return `<section class="screen"><div class="top"><div><h1 class="h1">${t('chats')}</h1><p class="sub">${t('chatsSub')}</p></div></div>
+  <div class="scroll" style="display:flex;flex-direction:column;gap:14px">
+    <div class="label">${t('newMatches')}</div>
+    ${S.matches.length ? `<div class="chips row" style="gap:14px">${S.matches.map(m=>`<button data-a="open" data-v="${m.id}" style="border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;width:64px;padding:0">
+      <div style="width:60px;height:60px;border-radius:99px;border:3px solid ${S.chats[m.id]&&S.chats[m.id].msgs.some(x=>x.me)?'#C9432E':'#E8A23B'};padding:3px">${av(m.name,m.tone,48)}</div>
+      <span style="font-size:12px;font-weight:600">${esc(m.name)}</span><span style="font-size:11px;color:var(--muted)">${S.chats[m.id]&&S.chats[m.id].msgs.some(x=>x.me)?'Chatting':'23h left'}</span></button>`).join('')}</div>`
+      : `<div class="card" style="font-size:14px;color:var(--muted)">No matches yet. Like someone on Discover — people marked ♥ in the demo like you back.</div>`}
+    <div class="label">${t('messages')}</div>
+    <div class="list">${ids.length ? ids.map(id=>{const c=S.chats[id],last=c.msgs[c.msgs.length-1];return `<button class="row-item" data-a="open" data-v="${id}">${av(c.name,c.tone,50)}
+      <div class="grow"><div class="t-name">${esc(c.name)} ${c.unread?'<span class="badge b-coral" style="padding:2px 8px;margin-left:4px">New</span>':''}</div><div class="t-meta">${last?esc((last.me?'You: ':'')+last.text):'Say hello 👋'}</div></div>
+      <span class="badge ${c.kind==='friends'?'b-teal':c.kind==='cafe'?'b-amber':'b-coral'}">${c.kind==='friends'?'Friend':c.kind==='cafe'?'Café':'Partner'}</span></button>`;}).join('') : '<div class="empty" style="padding:20px">Your conversations will appear here.</div>'}</div>
+  </div>${navBar()}</section>`;
+}
+
+function chat(){
+  const c = S.chats[S.openChat]; if (!c) { S.screen='chats'; return chats(); }
+  const icebreakers = ['What does a perfect Friday look like for you?','Tea or coffee — and where?','What are your kids into these days?','Free for a Café Hop this week?'];
+  return `<section class="screen">
+    <div class="top" style="padding-bottom:10px;border-bottom:1px solid var(--line);background:#fff">
+      <button class="iconbtn" style="background:var(--ground)" data-a="go" data-v="chats" aria-label="${t('back')}">${I.back}</button>
+      ${av(c.name,c.tone,40)}<div class="grow"><div class="t-name">${esc(c.name)}, ${c.age}</div><div style="font-size:12px;color:var(--teal)">${c.typing?'typing…':'✓ Verified · '+esc(c.sub||'')}</div></div>
+      <button class="chip ${S.settings.guardian?'on':''}" style="min-height:36px;font-size:12px;padding:0 10px" data-a="setting" data-v="guardian">${t('guardian')}${S.settings.guardian?' ✓':''}</button>
+      <button class="iconbtn" style="background:var(--ground)" data-a="sheet" data-v="chatmenu" aria-label="More options">${I.more}</button>
+    </div>
+    <div class="scroll" id="msgs" style="display:flex;flex-direction:column;gap:8px;padding-top:14px">
+      <div class="sys">${c.kind==='partner'?'You matched · photos are now unblurred':c.kind==='cafe'?'Café Hop request · meet only at partner venues':'You’re now friends'}</div>
+      ${S.settings.guardian?'<div class="sys">Guardian is on — a trusted family member can view this chat</div>':''}
+      ${c.msgs.map(m=>`<div class="bubble ${m.me?'me':'them'}">${esc(m.text)}</div>`).join('')}
+      ${c.msgs.length<2?`<div class="label" style="margin-top:6px">Icebreakers</div><div class="chips">${icebreakers.map(x=>`<button class="chip" style="font-weight:500;white-space:normal;text-align:left;padding:8px 12px" data-a="ice" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
+    </div>
+    <div style="padding:8px 12px 4px"><button class="chip" style="border-style:dashed;border-color:var(--teal);color:var(--teal);background:#EEF5F3" data-a="cafeInvite">☕ Suggest a Café Hop · tomorrow 1:15 pm</button></div>
+    <form data-form="send" style="display:flex;gap:8px;padding:8px 12px 24px">
+      <input id="msg" class="input" autocomplete="off" placeholder="${t('typeMsg')}" aria-label="${t('typeMsg')}" style="background:#fff;border-color:transparent">
+      <button class="iconbtn" type="submit" style="background:var(--coral);width:50px;height:50px" aria-label="Send">${I.send}</button>
+    </form></section>`;
+}
+
+function profile(){
+  const me = S.me, s = S.settings;
+  const rows = [['quiet',t('quiet'),t('quietH')],['blur',t('blur'),t('blurH')],['guardian',t('guardian'),t('guardianH')],['hideWork',t('hideWork'),t('hideWorkH')],['bangla',t('bangla'),t('banglaH')],['bigText',t('bigText'),t('bigTextH')]];
+  return `<section class="screen"><div class="scroll" style="padding-top:52px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="avatar" style="width:76px;height:76px;border-radius:24px;background:#6B4A12;font-size:30px">${esc(me.name[0]||'?')}</div>
+      <div class="grow"><div style="font-family:var(--display);font-weight:700;font-size:22px">${esc(me.name)}, ${me.age}</div>
+        <div class="sub">${esc(me.status)} · ${esc(me.kids)} · ${esc(me.job)}</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge b-teal">✓ Verified</span><span class="badge b-coral">${esc(me.intent)}</span>${S.plan==='active'?'<span class="badge b-amber">Gold</span>':''}</div></div>
+      <button class="small-btn" style="background:#fff;border:1.5px solid var(--line)" data-a="sheet" data-v="edit">${t('editProfile')}</button>
+    </div>
+    <div class="card"><div class="label">My ideal Friday</div><div style="font-size:15px;line-height:1.5;margin-top:6px">Morning walk, family lunch, and a quiet evening with someone to talk to.</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="row-item" data-a="go" data-v="safety" style="flex-direction:column;align-items:flex-start;gap:6px">${I.shield('#1E5B52')}<span class="t-name">${t('safety')}</span><span class="t-meta">Share date · SOS · report</span></button>
+      <button class="row-item" data-a="go" data-v="plus" style="flex-direction:column;align-items:flex-start;gap:6px;background:var(--ink);color:#fff">${I.star}<span class="t-name">${t('plus')}</span><span class="t-meta" style="color:#D8D4DE">Unlimited swipes</span></button>
+    </div>
+    <div class="label">${t('settings')}</div>
+    <div class="card" style="padding:4px 16px">${rows.map(([k,l,h])=>`<div class="setrow"><div class="grow"><div class="t-name">${l}</div><div class="t-meta" style="white-space:normal">${h}</div></div>
+      <button class="switch ${s[k]?'on':''}" role="switch" aria-checked="${!!s[k]}" aria-label="${esc(l)}" data-a="setting" data-v="${k}"><span></span></button></div>`).join('')}</div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="label">Modes</div>
+      <div class="chips">${[['partner','Partner'],['friends','Friends'],['cafe','Café Hop']].map(([k,l])=>`<button class="chip ${me.modes[k]?'on':''}" data-a="mode-toggle" data-v="${k}">${l}</button>`).join('')}</div></div>
+    <button class="btn ghost" data-a="reset">Restart demo</button>
+    <p class="sub" style="text-align:center;font-size:12px">Parades demo · sample data only</p>
+  </div>${navBar()}</section>`;
+}
+
+function safety(){
+  return `<section class="screen"><div class="top"><button class="iconbtn" data-a="go" data-v="profile" aria-label="${t('back')}">${I.back}</button><h1 class="h1 grow" style="font-size:24px">${t('safety')}</h1></div>
+  <div class="scroll" style="display:flex;flex-direction:column;gap:12px">
+    <button class="btn" style="background:#B3261E;color:#fff;min-height:64px;font-size:17px" data-a="sos">SOS — alert my trusted contact</button>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><div class="t-name">Share my date</div>
+      <div class="t-meta" style="white-space:normal">Send the time, place and your match's first name to someone you trust.</div>
+      <input class="input" value="Ammu · +880 1XXX XXXXXX" aria-label="Trusted contact"><button class="btn teal" data-a="toast" data-v="Date plan shared with your trusted contact.">Share plan</button></div>
+    <div class="card"><div class="t-name">Singles-only promise</div><div class="t-meta" style="white-space:normal;margin-top:4px">Every member is NID-verified and has pledged they are not married. Report anyone who is — confirmed cases are banned by NID.</div></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px"><div class="t-name">Report a problem</div>
+      <div class="chips">${['This person is married','Fake profile','Harassment','Asked for money','Under age'].map(r=>`<button class="chip" data-a="toast" data-v="Report received: ${r}. Our Bangla-speaking team reviews within 24 hours.">${r}</button>`).join('')}</div></div>
+    <div class="card"><div class="t-name">First-meeting tips</div><ul style="margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.7;color:var(--muted)"><li>Meet at a busy partner venue</li><li>Arrange your own transport</li><li>Keep the first meeting short — a Café Hop is perfect</li><li>Never send money to someone you haven't met</li></ul></div>
+  </div></section>`;
+}
+
+function plus(){
+  const plans = [['gold','Parades Gold','Unlimited swipes · see who liked you · rewind · 3 Café Hop invites a week','[BDT price] / month'],['platinum','Parades Platinum','Everything in Gold · priority in Partner mode · Status-verified fast track · BD ↔ UK travel mode','[BDT price] / month']];
+  return `<section class="screen" style="background:var(--ink);color:#fff"><div class="top"><button class="iconbtn" data-a="go" data-v="profile" aria-label="${t('back')}">${I.back}</button><div class="grow"></div></div>
+  <div class="scroll" style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;gap:10px;align-items:center">${logo(44,'#C9432E','#fff','#F3C9BF')}<h1 class="h1" style="color:#fff">Parades Plus</h1></div>
+    <p style="margin:0;color:#D8D4DE;line-height:1.55">Less time searching, more time meeting. Cancel any time.</p>
+    ${plans.map(([k,n,d,p])=>`<button class="plan ${S.planPick===k||(!S.planPick&&k==='gold')?'on':''}" data-a="pick" data-v="${k}"><span style="font-family:var(--display);font-weight:700;font-size:18px;color:var(--ink)">${n}</span><span style="font-size:14px;color:var(--muted);line-height:1.5">${d}</span><span style="font-weight:700;color:var(--coral-ink)">${p}</span></button>`).join('')}
+    <div class="label" style="color:#CFC8D6">Pay with</div>
+    <div class="chips">${['bKash','Nagad','Card','App Store / Google Play'].map(x=>`<span class="chip" style="display:inline-flex;align-items:center">${x}</span>`).join('')}</div>
+    <button class="btn primary" data-a="buy">Continue (demo — no payment)</button>
+    <p class="sub" style="color:#CFC8D6;font-size:12px;text-align:center">Prices are placeholders for testing.</p>
+  </div></section>`;
+}
+
+/* ---------- overlays ---------- */
+function overlay(){
+  let html = '';
+  if (S.sheet === 'filters') html = `<div class="overlay" data-a="close"><div class="sheet" data-stop><h2 class="h2">${t('filters')}</h2>
+    <label class="label" for="fa">Maximum age: <span id="fav">${S.filter.maxAge}</span></label><input id="fa" type="range" min="25" max="70" value="${S.filter.maxAge}" data-filter="maxAge" style="accent-color:#C9432E">
+    <label class="label" for="fk">Within: <span id="fkv">${S.filter.km}</span> km</label><input id="fk" type="range" min="1" max="20" value="${S.filter.km}" data-filter="km" style="accent-color:#C9432E">
+    <div class="label">Intention</div><div class="chips">${['Any','Marriage','Serious relationship','Companionship'].map(x=>`<button class="chip ${S.filter.intent===x?'on':''}" data-a="fint" data-v="${x}">${x}</button>`).join('')}</div>
+    <button class="btn primary" data-a="close">${t('apply')}</button></div></div>`;
+  if (S.sheet === 'area') html = `<div class="overlay" data-a="close"><div class="sheet" data-stop><h2 class="h2">Meet near</h2><div class="chips">${['Gulshan','Banani','Dhanmondi','Uttara','Mirpur','Motijheel','Bashundhara','Tejgaon'].map(x=>`<button class="chip ${S.me.area===x?'on':''}" data-a="area" data-v="${x}">${x}</button>`).join('')}</div></div></div>`;
+  if (S.sheet === 'chatmenu') html = `<div class="overlay" data-a="close"><div class="sheet" data-stop><h2 class="h2">Options</h2>
+    <button class="btn ghost" data-a="toast" data-v="Date plan shared with your trusted contact.">Share my date plan</button>
+    <button class="btn ghost" data-a="toast" data-v="Reported: this person may be married. We review within 24 hours.">Report: this person is married</button>
+    <button class="btn ghost" data-a="unmatch">Unmatch and block</button>
+    <button class="btn dark" data-a="close">Close</button></div></div>`;
+  if (S.sheet === 'edit') html = `<div class="overlay" data-a="close"><div class="sheet" data-stop><h2 class="h2">Edit profile</h2>
+    <label class="label" for="en">First name</label><input id="en" class="input" data-bind="name" value="${esc(S.me.name)}">
+    <label class="label" for="ej">Work</label><input id="ej" class="input" data-bind="job" value="${esc(S.me.job)}">
+    <div class="label">Looking for</div><div class="chips">${['Marriage','Serious relationship','Companionship'].map(k=>`<button class="chip ${S.me.intent===k?'on':''}" data-a="me" data-k="intent" data-v="${k}">${k}</button>`).join('')}</div>
+    <button class="btn primary" data-a="close">Save</button></div></div>`;
+  if (S.matchPop) { const m = S.matchPop; html += `<div class="match" role="dialog" aria-label="${t('itsMatch')}">
+    <div style="display:flex;align-items:center">${av(S.me.name,'#1C1B22',96)}<div style="margin-left:-18px;border:4px solid #C9432E;border-radius:99px">${av(m.name,m.tone,96)}</div></div>
+    <div style="font-family:var(--display);font-size:38px;font-weight:700;letter-spacing:-1px">${m.kind==='friends'?'New friend!':t('itsMatch')}</div>
+    <p style="margin:0;font-size:16px;line-height:1.5;color:#FFE9E4">You and ${esc(m.name)} liked each other.${m.kind==='partner'&&S.me.gender==='man'?' She can message first — or you can say hello.':''}<br>The match lasts 24 hours without a message.</p>
+    <button class="btn" style="background:#fff;color:#1C1B22" data-a="open" data-v="${m.id}">${t('sayHi')}</button>
+    <button class="btn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.7)" data-a="closeMatch">${t('keepSwiping')}</button></div>`; }
+  if (S.toast) html += `<div class="toast" role="status">${esc(S.toast)}</div>`;
+  return html;
+}
+
+/* ---------- render ---------- */
+function render(){
+  document.body.classList.toggle('bn', S.lang==='bn');
+  document.documentElement.lang = S.lang==='bn' ? 'bn' : 'en';
+  app.style.fontSize = S.settings.bigText ? '112%' : '';
+  const map = {welcome, onboarding, discover, cafe, circles, chats, chat, profile, safety, plus};
+  app.innerHTML = (map[S.screen]||discover)() + overlay();
+  if (S.settings.bigText) app.querySelectorAll('.t-meta,.sub,.bubble,.pcard .meta').forEach(e=>e.style.fontSize='15px');
+  const box = document.getElementById('msgs'); if (box) box.scrollTop = box.scrollHeight;
+  bindCard(); save();
+}
+let toastTimer;
+function toast(msg){ S.toast = msg; render(); clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ S.toast=null; render(); }, 2400); }
+
+/* ---------- logic ---------- */
+function ensureChat(p, kind){
+  if (!S.chats[p.id]) S.chats[p.id] = {name:p.name, age:p.age, tone:p.tone, kind, sub:(p.job?p.job+' · ':'')+(p.area||''), msgs:[], unread:false};
+  if (!S.matches.find(m=>m.id===p.id)) S.matches.unshift({id:p.id,name:p.name,tone:p.tone});
+  return S.chats[p.id];
+}
+function doSwipe(dir){
+  const list = deckFor(S.mode), i = S.idx[S.mode]||0, p = list[i]; if (!p || S.swipes<=0) return;
+  S.idx[S.mode] = i+1; S.swipes -= 1;
+  if (dir === 'cafe'){
+    const c = ensureChat(p,'cafe'); c.msgs.push({me:true,text:'☕ Café Hop invite: tomorrow 1:15–2 pm at [Partner café A], near '+S.me.area+'.'});
+    setTimeout(()=>{ c.msgs.push({me:false,text:'Yes! Lunch works for me. See you there 😊'}); c.unread = true; toast(p.name+' accepted your Café Hop'); }, 1800);
+    toast('Café Hop invite sent to '+p.name); return;
+  }
+  if (dir === 'like' && p.likes){
+    const kind = S.mode === 'friends' ? 'friends' : S.mode === 'cafe' ? 'cafe' : 'partner';
+    ensureChat(p, kind); S.matchPop = {id:p.id,name:p.name,tone:p.tone,kind};
+    if (kind==='partner' && S.me.gender==='man') setTimeout(()=>{ const c=S.chats[p.id]; if(c && !c.msgs.length){ c.msgs.push({me:false,text:'Hi '+S.me.name+'! Your profile made me smile. How is your week going?'}); c.unread=true; render(); } }, 4000);
+  }
+  render();
+}
+function reply(id){
+  const c = S.chats[id]; if (!c) return;
+  c.typing = true; render();
+  setTimeout(()=>{ c.typing=false; c.msgs.push({me:false,text:REPLIES[(c.msgs.length)%REPLIES.length]}); if (S.openChat!==id||S.screen!=='chat') c.unread=true; render(); }, 1400);
+}
+function sendMsg(text){
+  text = (text||'').trim(); if (!text) return; const c = S.chats[S.openChat]; if (!c) return;
+  c.msgs.push({me:true,text}); render(); reply(S.openChat);
+}
+
+/* ---------- swipe gesture ---------- */
+function bindCard(){
+  const card = document.getElementById('pcard'); if (!card) return;
+  let x0=null, dx=0;
+  const like = card.querySelector('.stamp.like'), nope = card.querySelector('.stamp.nope');
+  card.addEventListener('pointerdown', e=>{ x0=e.clientX; dx=0; card.classList.add('dragging'); card.setPointerCapture(e.pointerId); });
+  card.addEventListener('pointermove', e=>{ if(x0===null) return; dx=e.clientX-x0; card.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`; like.style.opacity=Math.max(0,Math.min(1,dx/90)); nope.style.opacity=Math.max(0,Math.min(1,-dx/90)); });
+  const end = ()=>{ if(x0===null) return; card.classList.remove('dragging'); x0=null;
+    if (Math.abs(dx)>100){ card.style.transform=`translateX(${dx>0?600:-600}px) rotate(${dx>0?30:-30}deg)`; setTimeout(()=>doSwipe(dx>0?'like':'pass'),180); }
+    else { card.style.transform=''; like.style.opacity=0; nope.style.opacity=0; } };
+  card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e=>{
+  const stop = e.target.closest('[data-stop]'); const el = e.target.closest('[data-a]');
+  if (!el) return; if (stop && !stop.contains(el)) return;
+  if (stop && el.classList.contains('overlay')) return;
+  const a = el.dataset.a, v = el.dataset.v;
+  switch(a){
+    case 'start': S.screen='onboarding'; S.step=0; break;
+    case 'skip': S.me.verified=true; S.me.pledge=true; S.screen='discover'; break;
+    case 'lang': S.lang=v; S.settings.bangla = v==='bn'; break;
+    case 'obBack': if (S.step===0) S.screen='welcome'; else S.step--; break;
+    case 'obNext': if (S.step<4) S.step++; else { S.screen='discover'; S.mode = ['partner','friends','cafe'].find(k=>S.me.modes[k]); toast('Welcome to Parades, '+S.me.name+'!'); return; } break;
+    case 'scan': S.scanning=true; render(); setTimeout(()=>{ S.scanning=false; S.me.verified=true; render(); }, 1800); return;
+    case 'pledge': S.me.pledge = el.checked; break;
+    case 'me': S.me[el.dataset.k]=v; if (el.dataset.k==='gender'){ if(v==='woman'&&S.me.kids.startsWith('Dad')) S.me.kids='Mum of 1'; if(v==='man'&&S.me.kids.startsWith('Mum')) S.me.kids='Dad of 1'; S.idx={partner:0,friends:0,cafe:0}; } break;
+    case 'mode-toggle': S.me.modes[v]=!S.me.modes[v]; if(!Object.values(S.me.modes).some(Boolean)) S.me.modes[v]=true; if(!S.me.modes[S.mode]) S.mode=['partner','friends','cafe'].find(k=>S.me.modes[k]); break;
+    case 'go': S.screen=v; S.sheet=null; if (v!=='chat') S.openChat=null; break;
+    case 'mode': S.mode=v; break;
+    case 'slot': S.slot=v; S.idx.cafe=0; break;
+    case 'swipe': { const card=document.getElementById('pcard'); if(card&&v!=='cafe'){ card.style.transform=`translateX(${v==='like'?600:-600}px) rotate(${v==='like'?30:-30}deg)`; setTimeout(()=>doSwipe(v),180); return; } doSwipe(v); return; }
+    case 'resetDeck': S.idx[S.mode]=0; S.swipes=10; break;
+    case 'invite': { const slot=SLOTS.find(s=>s.id===S.slot), p=slot.people.find(x=>x.id===v); if(S.invited[v]) return;
+      S.invited[v]=true; const c=ensureChat(Object.assign({},p,{job:'',area:S.me.area}),'cafe'); c.msgs.push({me:true,text:'☕ Café Hop invite: '+slot.en+' at [Partner café A].'});
+      setTimeout(()=>{ c.msgs.push({me:false,text:'Sounds good — see you then!'}); c.unread=true; toast(p.name+' accepted your Café Hop'); }, 2200);
+      toast('Invite sent to '+p.name); return; }
+    case 'topic': S.topic=v; break;
+    case 'support': S.supported[v]=!S.supported[v]; break;
+    case 'post': { const txt=(document.getElementById('composer')||{}).value||''; if(!txt.trim()){ toast('Write something first'); return; }
+      S.posts.unshift({id:Date.now(),topic:S.topic==='For you'?'Single parents':S.topic,name:S.me.name,tone:'#C9432E',time:'now',text:txt.trim(),replies:0}); S.draft=''; toast('Posted to '+S.posts[0].topic); return; }
+    case 'open': S.openChat=v; S.screen='chat'; S.matchPop=null; S.sheet=null; if(S.chats[v]) S.chats[v].unread=false; break;
+    case 'closeMatch': S.matchPop=null; break;
+    case 'ice': sendMsg(v); return;
+    case 'cafeInvite': sendMsg('☕ Café Hop: tomorrow 1:15–2 pm at [Partner café A]? It’s public and close to both of us.'); return;
+    case 'setting': S.settings[v]=!S.settings[v]; if(v==='bangla') S.lang=S.settings.bangla?'bn':'en'; break;
+    case 'sheet': S.sheet=v; break;
+    case 'close': if (e.target!==el && el.classList.contains('overlay')) return; S.sheet=null; break;
+    case 'fint': S.filter.intent=v; S.idx.partner=0; break;
+    case 'area': S.me.area=v; S.sheet=null; break;
+    case 'unmatch': delete S.chats[S.openChat]; S.matches=S.matches.filter(m=>m.id!==S.openChat); S.openChat=null; S.sheet=null; S.screen='chats'; toast('Unmatched and blocked'); return;
+    case 'toast': S.sheet=null; toast(v); return;
+    case 'sos': toast('Demo: SOS would call and text your trusted contact with your live location.'); return;
+    case 'pick': S.planPick=v; break;
+    case 'buy': S.plan='active'; S.swipes=99; S.screen='profile'; toast('Gold activated (demo) — unlimited swipes'); return;
+    case 'reset': S = fresh(); store.set('state', null); break;
+    default: return;
+  }
+  render();
+});
+document.addEventListener('input', e=>{
+  const b = e.target.dataset.bind; if (b){ S.me[b] = b==='age' ? (parseInt(e.target.value,10)||0) : e.target.value; save(); if(b==='age'){ const pos=e.target.selectionStart; render(); const el=document.getElementById('age'); if(el){ el.focus(); try{el.setSelectionRange(pos,pos);}catch(x){} } } return; }
+  if (e.target.id==='composer'){ S.draft=e.target.value; const cc=document.getElementById('cc'); if(cc) cc.textContent=S.draft.length+'/280'; save(); }
+  const f = e.target.dataset.filter; if (f){ S.filter[f]=parseInt(e.target.value,10); S.idx.partner=0; const lab=document.getElementById(f==='km'?'fkv':'fav'); if(lab) lab.textContent=S.filter[f]; save(); }
+});
+document.addEventListener('submit', e=>{ if (e.target.dataset.form==='send'){ e.preventDefault(); const i=document.getElementById('msg'); sendMsg(i.value); const n=document.getElementById('msg'); if(n) n.focus(); } });
+document.addEventListener('keydown', e=>{
+  if (S.screen!=='discover' || S.matchPop || S.sheet || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if (e.key==='ArrowRight') doSwipe('like'); if (e.key==='ArrowLeft') doSwipe('pass');
+});
+
+S.toast = null; S.matchPop = null; S.scanning = false;
+render();
+})();
+</script>
+</body>
+</html>
